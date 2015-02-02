@@ -1,56 +1,148 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "fonctions.h"
+#include "interfaceClient.h"
 #include "client.h"
 
-int main() {
-	char *message;
+/********A faire********\
+ *
+ * - 
+ * -
+ * -
+ * -
+*/
 
-	if(Initialisation("localhost") != 1) {
-		printf("Erreur d'initialisation\n");
-		return 1;
+/********Déjà fait********\
+ *
+ * - Connexion
+ * - Recherche d'un compte à partir du nom
+ * - Creation d'un compte
+ * - Creation d'un objet (à verifier)
+ * - 
+*/
+
+
+int main(void)
+{
+	//Declaration des variables
+	int choix; //Stock le choix de l'utilisateur
+	int type=-1;
+	UserAccount account;
+	Item item;
+	while( (choix = menuAccueil()) != MENU_CHOICE_QUIT ){
+		switch(choix){
+
+			case MENU_CHOICE_MAIN_ANONYMOUS:
+				while((choix = menuPrincipalAnonyme()) != MENU_CHOICE_QUIT){
+				    switch(choix)
+				    {
+				        case MENU_CHOICE_ITEM_LIST:
+				            //Liste d'objets
+				            break;
+				        case MENU_CHOICE_MAIN_SEARCH:
+				            //Recherche d'un objet
+				            break;
+				        case MENU_CHOICE_QUIT:
+				            //On quitte
+				            break;
+				        default:
+				            printf("\n\t\t Votre choix est invalide ...\n\n");
+				            break;
+				    }
+				}
+				system("clear");
+			break;
+
+			case MENU_CHOICE_MAIN_ACCOUNT_CREATION:
+				nouvelUtilisateur();
+			break;
+
+			case MENU_CHOICE_MAIN_CONNECTION:
+				if ((connexion(&account)) && account.type > 0){
+					switch(type)
+					{
+						case ACCOUNT_TYPE_ADMIN:
+							while((choix = menuPrincipalAdmin()) != MENU_CHOICE_QUIT){
+							    switch(choix)
+							    {
+							        case MENU_CHOICE_ITEM_LIST:
+							            //Liste d'objets
+							            break;
+							        case MENU_CHOICE_MAIN_SEARCH:
+							            //Recherche d'un objet
+							        	rechercheObjet(&item);
+							            break;
+							        case MENU_CHOICE_QUIT:
+							            //On quitte
+							            break;
+							        default:
+							            printf("\n\t\t Votre choix est invalide ...\n\n");
+							            break;
+							    }
+							}
+						break;
+						case ACCOUNT_TYPE_VENDOR:
+							while((choix = menuPrincipalVendeur()) != MENU_CHOICE_QUIT){
+							    switch(choix)
+							    {
+							        case MENU_CHOICE_SELL:
+							            //Liste d'objets
+							        		nouvelObjet(&account);
+							            break;
+							        case MENU_CHOICE_ALREADY_SELL:
+							            	rechercheObjet(&item);
+							            break;
+							        case MENU_CHOICE_QUIT:
+							            //On quitte
+							            break;
+							        default:
+							            printf("\n\t\t Votre choix est invalide ...\n\n");
+							            break;
+							    }
+							}
+						break;
+						case ACCOUNT_TYPE_USER:
+							while((choix = menuPrincipalAcheteur()) != MENU_CHOICE_QUIT){
+							    switch(choix)
+							    {
+							        case MENU_CHOICE_ITEM_LIST:
+							            //Liste d'objets
+							            break;
+							        case MENU_CHOICE_MAIN_SEARCH:
+							            //Recherche d'un objet
+							        	rechercheObjet(&item);
+							            break;
+							        case MENU_CHOICE_QUIT:
+							            //On quitte
+							            break;
+							        default:
+							            printf("\n\t\t Votre choix est invalide ...\n\n");
+							            break;
+							    }
+							}
+						break;
+					}
+				}
+				else{
+					printf("Nom de compte incorrect...\nAppuyez sur une touche pour continuer...\n");
+					getchar();
+				}
+			break;
+
+			default:
+			    printf("\n\t\t Votre choix est invalide ...\n\n");
+			break;
+		}
 	}
 
-	if(Emission("Test de message client1.\n")!=1) {
-		printf("Erreur d'emission\n");
-		return 1;
-	}
-	if(Emission("Test de message client2.\n")!=1) {
-		printf("Erreur d'emission\n");
-		return 1;
-	}
-	if(Emission("Test de message client3.\n")!=1) {
-		printf("Erreur d'emission\n");
-		return 1;
-	}
+	system("clear");
+    printf("\n\t\t MUVI vous souhaite une bonne journée et espère vous revoir très bientôt !\n\n");
 
-	message = Reception();
-	if(message != NULL) {
-		printf("J'ai recu: %s\n", message);
-		free(message);
-	} else {
-		printf("Erreur de reception\n");
-		return 1;
-	}
+    videBuffer();
+    fgetc(stdin); // équivaut à une pause
 
-	message = Reception();
-	if(message != NULL) {
-		printf("J'ai recu: %s\n", message);
-		free(message);
-	} else {
-		printf("Erreur de reception\n");
-		return 1;
-	}
 
-	message = Reception();
-	if(message != NULL) {
-		printf("J'ai recu: %s\n", message);
-		free(message);
-	} else {
-		printf("Erreur de reception\n");
-		return 1;
-	}
-
-	Terminaison();
-
-	return 0;
+    return 0;
 }
