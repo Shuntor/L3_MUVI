@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "fonctions.h"
 
@@ -237,16 +238,29 @@ void EnregDansFichierObjet (Item* item, UserAccount* account)
     }
     else
     {
-        fprintf(sortie,"%lu \n %s \n %d \n %s \n %s \n", account->id, item->nom, item->prixDepart, item->description, item->lieu);
+        fprintf(sortie,"%lu \n%lu \n %s \n %d \n %s \n %s \n", account->id, item->id, item->nom, item->prixDepart, item->description, item->lieu);
     } 
     fclose(sortie);
 }
 
 void nouvelObjet(UserAccount* account){
     
+/*    long long id; */
+    srand(time(NULL));
+
+/*    id = rand();
+    id = id | ((uint64_t)time(NULL) << 16);*/
+
+
     Item item;
 
     saisieObjet(&item);
+
+    item.idVendeur = account->id;
+    item.idAcheteur = 0;
+    item.ouvertureEnchere = (unsigned)time(NULL);
+    item.id = rand();
+
     EnregDansFichierObjet (&item, account);
 }
 
