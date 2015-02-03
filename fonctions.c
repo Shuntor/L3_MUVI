@@ -14,6 +14,8 @@ void videBuffer()
     {
         buff = fgetc(stdin);
     }
+    // int c = 0;
+    // while ((c = getchar()) != '\n' && c != EOF);
 }
 
 
@@ -147,25 +149,24 @@ void EnregDansFichier (UserAccount* account)
        fclose(sortie);
 }
 
-int RechercheCpte (UserAccount* account) 
+int RechercheCpte (UserAccount* account, char* nomClient) //Marche bien maintenant
 {
-     int trouve=1;
+     int trouve=-1;
      FILE *sortie;
-     char* nomClient=account->lastname ;//On stock le nom à rechercher
+      // printf("nomCLient : %s account : %s\n", nomClient, account->lastname );
      
      sortie=fopen(ACCOUNT_FILE, "rt");
-     while (fscanf(sortie,"%lu\n%d\n%s\n%s\n%s\n%s", &account->id, &account->type, account->firstname, account->lastname, account->adress, account->mail)!=EOF && trouve) // tant que la fin du fichier n'est pas atteinte
+     while ((trouve!=0) && fscanf(sortie,"%lu\n%d\n%s\n%s\n%s\n%s", &account->id, &account->type, account->firstname, account->lastname, account->adress, account->mail) ) // tant que la fin du fichier n'est pas atteinte
      {
         // printf("%lu\n%d\n%s\n%s\n%s\n%s\n", account->id, account->type, account->firstname, account->lastname, account->adress, account->mail);
-         if (account) // Si un nom de client a ete saisi
+         if (nomClient ) // Si un nom de client a ete saisi
          {
             trouve=(strcmp(nomClient, account->lastname));
+            // printf("trouve : %d account->lasname : %s nomClient : %s\n", trouve, account->lastname, nomClient); getchar();
          }
      } // fin du while
-     printf("account : %d\n", account->type); getchar();
     return (trouve==0)? TRUE : FALSE;
 }
-
 
 // int LectureCompteFichier (UserAccount *user) //Fonction ncomplète
 // {
@@ -207,8 +208,8 @@ void saisieObjet(Item* item)
     system("clear");
 
     printf("Entrez le prix de départ :\n");
-    fscanf(stdin,"%d",&(item->prixDepart));
-    //videBuffer();
+    scanf("%d",&item->prixDepart);
+    videBuffer();
     system("clear");
 
     printf("Entrez la description :\n");
@@ -228,20 +229,17 @@ void saisieObjet(Item* item)
 
 void EnregDansFichierObjet (Item* item, UserAccount* account)
 {
-     FILE *sortie;
-  
-       sortie=fopen(ITEM_FILE,"at");
- 
-       if (sortie == NULL)
-       {
-            printf("Un probleme est survenue lors de la tentative d'enregistrement de votre objet dans le fichier\n");
-       }
-       else
-       {
-            fprintf(sortie,"%lu \n %s \n %d \n %s \n %s \n", account->id, item->nom, item->prixDepart, item->description, item->lieu);
-       } 
-
-       fclose(sortie);
+    FILE *sortie; 
+    sortie=fopen(ITEM_FILE,"at");
+    if (sortie == NULL)
+    {
+        printf("Un probleme est survenue lors de la tentative d'enregistrement de votre objet dans le fichier\n");
+    }
+    else
+    {
+        fprintf(sortie,"%lu \n %s \n %d \n %s \n %s \n", account->id, item->nom, item->prixDepart, item->description, item->lieu);
+    } 
+    fclose(sortie);
 }
 
 void nouvelObjet(UserAccount* account){
@@ -249,41 +247,68 @@ void nouvelObjet(UserAccount* account){
     Item item;
 
     saisieObjet(&item);
-
     EnregDansFichierObjet (&item, account);
 }
 
-
-int connexion(UserAccount* account)
+int rechercheObjet (Item* item) 
 {
-    videBuffer();
-    printf("Veuillez saisir votre nom :\n");
-    fgets(account->lastname,USERACCOUNT_LASTNAME_LENGTH,stdin);
-    if(strlen(account->lastname) < USERACCOUNT_LASTNAME_LENGTH-1)
-        account->lastname[strlen(account->lastname)-1] = '\0';;
-    system("clear");
-    return (RechercheCpte(account)) ;
-}
-
-
-
-int rechercheObjet(Item* item)
-{
-     int trouve=1;
+     int trouve=-1;
      FILE *sortie;
-     char objRech[ITEM_NAME_LENGTH];
-
-    printf("Entrez le nom de l'objet recherché :\n");
-    fgets(objRech,ITEM_NAME_LENGTH,stdin);
-    if(strlen(objRech) < ITEM_NAME_LENGTH-1)
-        objRech[strlen(objRech)-1] = '\0';
-    videBuffer();
+     char nomObjet[ITEM_NAME_LENGTH];
+     videBuffer();
+     printf("Veuillez saisir le nom de l'objet recherché : \n");
+     fgets(nomObjet,ITEM_NAME_LENGTH,stdin);
+    if(strlen(nomObjet) < ITEM_NAME_LENGTH-1)
+        nomObjet[strlen(nomObjet)-1] = '\0';;
     system("clear");
 
      sortie=fopen(ITEM_FILE, "rt");
-     while (fscanf(sortie,"%s\n%d\n%s\n%s", item->nom, &item->prixDepart, item->description, item->lieu)!=EOF && trouve) // tant que la fin du fichier n'est pas atteinte
+     while ((trouve!=0) && fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s",&item->id, item->nom, &item->prixDepart, item->description, item->lieu)>0  ) // tant que la fin du fichier n'est pas atteinte
      {
-            trouve=(strcmp(objRech, item->nom));
+        trouve=(strcmp(nomObjet, item->nom));
      } // fin du while
-    return (trouve==0)? TRUE : FALSE;
+     fclose(sortie);
+
+    if (!trouve){
+        printf("Cet objet existe bien !\n");
+        printf("Voici ses informations :\nnom : %s\nprix : %d\ndescripton : %s\nlieu : %s\n", item->nom, item->prixDepart, item->description, item->lieu );
+    }else
+        printf("Malheureusement cet objet n'exste pas :-(\n");
+    printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
+
+    return 0;
 }
+
+int connexion(UserAccount* account)
+{
+    char lastname[USERACCOUNT_LASTNAME_LENGTH];
+    videBuffer();
+    printf("Veuillez saisir votre nom :\n");
+    fgets(lastname,USERACCOUNT_LASTNAME_LENGTH,stdin);
+    if(strlen(lastname) < USERACCOUNT_LASTNAME_LENGTH-1)
+        lastname[strlen(lastname)-1] = '\0';;
+    system("clear");
+    return (RechercheCpte(account, lastname)) ;
+}
+
+int listeObjet()
+{
+    FILE *sortie;
+    Item item;
+    videBuffer();
+    system("clear");
+    sortie=fopen(ITEM_FILE, "rt");
+    printf("========LISTE DES OBJETS======== \n\n");
+    while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s",&item.id, item.nom, &item.prixDepart, item.description, item.lieu)>0  ) // tant que la fin du fichier n'est pas atteinte
+    {
+       printf("Nom : %s\nPrix de depart : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prixDepart, item.description, item.lieu);
+       printf("================================\n");
+    } // fin du while
+
+    printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
+    fclose(sortie);
+
+    return 0;
+}
+
+

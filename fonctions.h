@@ -97,7 +97,7 @@
 	 *
 	 * R : 
 	*/
-	int RechercheCpte ( UserAccount* account );
+	int RechercheCpte ( UserAccount* account, char* nomClient );
 	int LectureCompteFichier (UserAccount *user);
 
 	/*
@@ -109,10 +109,11 @@
 	void saisieObjet(Item* item);
 	void EnregDansFichierObjet (Item* item, UserAccount* account);
 	void nouvelObjet(UserAccount* account);
-
-	int connexion(UserAccount* account);
-
 	int rechercheObjet(Item* item);
+	int connexion(UserAccount* account);
+	int listeObjet();
+
+
 
 
 #endif

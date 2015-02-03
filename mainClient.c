@@ -9,9 +9,9 @@
 /********A faire********\
  *
  * - 
- * -
- * -
- * -
+ * - Voir vos objets en vente
+ * - encherir
+ * - 
 */
 
 /********Déjà fait********\
@@ -19,8 +19,9 @@
  * - Connexion
  * - Recherche d'un compte à partir du nom
  * - Creation d'un compte
- * - Creation d'un objet (à verifier)
- * - 
+ * - Creation d'un objet 
+ * - Recherche d'objet
+ * - listeObjet
 */
 
 
@@ -28,7 +29,7 @@ int main(void)
 {
 	//Declaration des variables
 	int choix; //Stock le choix de l'utilisateur
-	int type=-1;
+	// int test;
 	UserAccount account;
 	Item item;
 	while( (choix = menuAccueil()) != MENU_CHOICE_QUIT ){
@@ -40,9 +41,11 @@ int main(void)
 				    {
 				        case MENU_CHOICE_ITEM_LIST:
 				            //Liste d'objets
+				        	listeObjet();
 				            break;
 				        case MENU_CHOICE_MAIN_SEARCH:
 				            //Recherche d'un objet
+				        	rechercheObjet(&item);
 				            break;
 				        case MENU_CHOICE_QUIT:
 				            //On quitte
@@ -60,18 +63,20 @@ int main(void)
 			break;
 
 			case MENU_CHOICE_MAIN_CONNECTION:
-				if ((connexion(&account)) && account.type > 0){
-					switch(type)
+				if ((connexion(&account)) && (account.type > 0 )){
+					switch(account.type)
 					{
-						case ACCOUNT_TYPE_ADMIN:
+						case ACCOUNT_TYPE_ADMIN: //==1
 							while((choix = menuPrincipalAdmin()) != MENU_CHOICE_QUIT){
 							    switch(choix)
 							    {
 							        case MENU_CHOICE_ITEM_LIST:
 							            //Liste d'objets
+							        	listeObjet();
 							            break;
 							        case MENU_CHOICE_MAIN_SEARCH:
 							            //Recherche d'un objet
+							        	
 							        	rechercheObjet(&item);
 							            break;
 							        case MENU_CHOICE_QUIT:
@@ -83,7 +88,7 @@ int main(void)
 							    }
 							}
 						break;
-						case ACCOUNT_TYPE_VENDOR:
+						case ACCOUNT_TYPE_VENDOR: //==2
 							while((choix = menuPrincipalVendeur()) != MENU_CHOICE_QUIT){
 							    switch(choix)
 							    {
@@ -92,7 +97,7 @@ int main(void)
 							        		nouvelObjet(&account);
 							            break;
 							        case MENU_CHOICE_ALREADY_SELL:
-							            	rechercheObjet(&item);
+							            	//Objets déjà en vente (même fonction que rechercher objet mais avec le nom de l'utilisateur)
 							            break;
 							        case MENU_CHOICE_QUIT:
 							            //On quitte
@@ -103,15 +108,16 @@ int main(void)
 							    }
 							}
 						break;
-						case ACCOUNT_TYPE_USER:
+						case ACCOUNT_TYPE_USER: //==3
 							while((choix = menuPrincipalAcheteur()) != MENU_CHOICE_QUIT){
 							    switch(choix)
 							    {
 							        case MENU_CHOICE_ITEM_LIST:
 							            //Liste d'objets
+							        	listeObjet();
 							            break;
 							        case MENU_CHOICE_MAIN_SEARCH:
-							            //Recherche d'un objet
+							            //Recherche d'un objet							        
 							        	rechercheObjet(&item);
 							            break;
 							        case MENU_CHOICE_QUIT:
