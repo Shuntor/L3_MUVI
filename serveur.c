@@ -23,7 +23,7 @@
 
 #define TRUE 1
 #define FALSE 0
-#define LONGUEUR_TAMPON 4096
+#define BUFFER_LENGTH 4096
 
 
 #ifdef WIN32
@@ -47,10 +47,11 @@ int connectEnd = FALSE;
 /* Initialisation.
  * 
  */
-int Initialisation(char *port) {
+int Initialisation() {
     int n;
     const int on = 1;
     struct addrinfo hints, *res, *ressave;
+    char port[] = "5050";
 
     #ifdef WIN32
         WSADATA wsaData;
@@ -281,7 +282,7 @@ void Terminaison() {
 
 /*
 */
-size_t file_length(char *filename){
+/*size_t file_length(char *filename){
     int length = -1;
     FILE * file = fopen(filename,"r");
     if (file!=NULL)
@@ -292,12 +293,12 @@ size_t file_length(char *filename){
     }
     fprintf(stderr,"error unknown file : (%s)\n",filename);
     return length; 
-}
+}*/
 
 
 /*
 */
-int sendStatusLine(int statusCode){
+/*int sendStatusLine(int statusCode){
     int retour=0;
     char statusLine[STATUS_LINE_LENGTH+1];
     switch(statusCode)
@@ -352,12 +353,12 @@ int sendStatusLine(int statusCode){
     statusLine[15] = '\n';
     statusLine[16] = '\0';
     return retour;
-}
+}*/
 
 
 /*
 */
-int sendHeaderField(){
+/*int sendHeaderField(){
     int retour=0;
     char headerField [RESPONSE_HEADER_LENGTH+1];
     strcpy(headerField,RESPONSE_HEADER_FIELDNAME_CONTENT_LENGTH);
@@ -369,7 +370,7 @@ int sendHeaderField(){
     headerField[63] = '\n';
     headerField[64] = '\0';
     return retour;
-}
+}*/
 
 
 /*
