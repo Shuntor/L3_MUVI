@@ -5,6 +5,13 @@
 #include "fonctions.h"
 #include "serveur.h"
 
+/* TODO:
+
+- Switch suivant les cas des messages
+- Renvoyer une erreur quand le message est trop grand
+
+*/
+
 int main()
 {
     char *message = NULL;
