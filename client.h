@@ -1,7 +1,7 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
-#define SERVER_PORT 5050
+#include "protocole.h"
 
 /* Initialisation.
  * Connexion au serveur sur la machine donnee.

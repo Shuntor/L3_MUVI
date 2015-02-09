@@ -1,14 +1,9 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <sys/types.h>
 
-#ifdef WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -16,21 +11,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <strings.h>
-#endif
 
 #include <errno.h>
-
-#ifdef WIN32
-#define perror(x) printf("%s : code d'erreur : %d\n", (x), WSAGetLastError())
-#define close closesocket
-#define socklen_t int
-#endif
 
 #include "client.h"
 
 #define TRUE 1
 #define FALSE 0
-
 #define LONGUEUR_TAMPON 4096
 
 
@@ -55,18 +42,8 @@ int Initialisation(char *machine) {
     struct addrinfo hints, *res, *ressave;
     char *service = SERVER_PORT;
 
-#ifdef WIN32
-    WSADATA wsaData;
-    if (WSAStartup(0x202,&wsaData) == SOCKET_ERROR)
-    {
-        fprintf(stderr,"WSAStartup() n'a pas fonctionne, erreur : %d\n", WSAGetLastError()) ;
-        WSACleanup();
-        exit(1);
-    }
-    memset(&hints, 0, sizeof(struct addrinfo));
-#else
     bzero(&hints, sizeof(struct addrinfo));
-#endif
+
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
@@ -118,8 +95,8 @@ char *Reception() {
     while(!fini) {
         /* on cherche dans le tampon courant */
         while((finTampon > debutTampon) && (!trouve)) {
-            //fprintf(stderr, "Boucle recherche char : %c(%x), index %d debut tampon %d.\n",
-            //                  tamponClient[debutTampon], tamponClient[debutTampon], index, debutTampon);
+            //fprintf(stderr, "Boucle recherche char : (%x), index %d debut tampon %d.\n",
+            //                   tamponClient[debutTampon], index, debutTampon);
             if (tamponClient[debutTampon]=='\n')
                 trouve = TRUE;
             else
@@ -132,11 +109,9 @@ char *Reception() {
             debutTampon++;
             fini = TRUE;
             //fprintf(stderr, "trouve\n");
-#ifdef WIN32
-            return _strdup(message);
-#else
+
             return strdup(message);
-#endif
+
         } else {
             /* il faut en lire plus */
             debutTampon = 0;
@@ -153,11 +128,9 @@ char *Reception() {
                 if(index > 0) {
                     message[index++] = '\n';
                     message[index] = '\0';
-#ifdef WIN32
-                    return _strdup(message);
-#else
+
                     return strdup(message);
-#endif
+
                 } else {
                     return NULL;
                 }

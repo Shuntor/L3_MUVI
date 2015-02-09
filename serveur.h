@@ -1,7 +1,7 @@
 #ifndef __SERVEUR_H__
 #define __SERVEUR_H__
 
-#include "muvi.h"
+#include "protocole.h"
 
 /* Initialisation.
  * 
