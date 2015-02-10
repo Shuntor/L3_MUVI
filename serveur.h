@@ -1,12 +1,41 @@
 #ifndef __SERVEUR_H__
 #define __SERVEUR_H__
 
-#include "muvi.h"
+
+//request methods
+#define REQUEST_METHOD_GET "GET"
+#define REQUEST_METHOD_PUT "PUT"
+#define REQUEST_METHOD_CONNECT "CONNECT"
+#define REQUEST_METHOD_DELETE "DELETE"
+
+
+// codes retour requete positifs
+#define STATUS_CODE_OK 00
+#define STATUS_CODE_CREATED 01
+//reason phrases
+#define REASON_PHRASE_OK "Ok"
+#define REASON_PHRASE_CREATED "Created"
+
+
+// codes retour requete negatifs
+#define STATUS_CODE_BAD_REQUEST -1
+#define STATUS_CODE_NOT_CREATED -2
+#define STATUS_CODE_INTERNAL_SERVER_ERROR -3
+#define STATUS_CODE_CONFLICT -4
+#define STATUS_CODE_FORBIDDEN -5
+// reason phrases
+#define REASON_PHRASE_BAD_REQUEST "Bad Request"
+#define REASON_PHRASE_NOT_CREATED "Not Created"
+#define REASON_PHRASE_INTERNAL_SERVER_ERROR "Server Error"
+#define REASON_PHRASE_CONFLICT "Conflict"
+#define REASON_PHRASE_FORBIDDEN "Forbidden"
+
+
 
 /* Initialisation.
  * 
  */
-int Initialisation();
+int Initialisation(char *port);
 
 
 /* connectait.
@@ -24,21 +53,21 @@ char *Reception();
 
 /* Envoie un message au client.
  * Attention, le message doit etre termine par \n
- * renvoie 1 si ça c'est bien passé 0 sinon
+ * renvoie 1 si a c'est bien pass 0 sinon
  */
 int Emission(char *message);
 
 
 /* Recoit des donnees envoyees par le client.
- * renvoie le nombre d'octets reçus, 0 si la connexion est fermée,
- * un nombre négatif en cas d'erreur
+ * renvoie le nombre d'octets reus, 0 si la connexion est ferme,
+ * un nombre ngatif en cas d'erreur
  */
 int ReceptionBinaire(char *donnees, size_t tailleMax);
 
 
-/* Envoie des données au client en précisant leur taille.
- * renvoie le nombre d'octets envoyés, 0 si la connexion est fermée,
- * un nombre négatif en cas d'erreur
+/* Envoie des donnes au client en prcisant leur taille.
+ * renvoie le nombre d'octets envoys, 0 si la connexion est ferme,
+ * un nombre ngatif en cas d'erreur
  */
 int EmissionBinaire(char *donnees, size_t taille);
 

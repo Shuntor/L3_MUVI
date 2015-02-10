@@ -10,18 +10,13 @@ CC=gcc
 CFLAGS=-W -Wall
 LDFLAGS=
 SOURCES=mainClient.c interfaceClient.c fonctions.c
-SOURCES_SERV=mainServeur.c fonctions.c serveur.c
 OBJECTS=$(SOURCES:.c=.o)
-OBJECTS_SERV=$(SOURCES_SERV:.c=.o)
-EXECUTABLE=client serveur
+EXECUTABLE=client
 
 # all
 all: $(EXECUTABLE)
 	
-client: $(OBJECTS) 
-	$(CC) -o $@ $^ $(LDFLAGS) 
-
-serveur: $(OBJECTS_SERV)
+$(EXECUTABLE): $(OBJECTS) 
 	$(CC) -o $@ $^ $(LDFLAGS) 
 
 .c.o:
@@ -33,5 +28,5 @@ clean:
  
 # mrproper
 mrproper: clean
-		rm -rf $(EXECUTABLE)
+		rm -rf $(EXEC)
 

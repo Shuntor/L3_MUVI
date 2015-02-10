@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "fonctions.h"
 
@@ -200,6 +201,8 @@ void saisieObjet(Item* item)
 {
     system("clear");
 
+    item->id=time(NULL);
+
     videBuffer();
     printf("Entrez le nom de l'objet :\n");
     fgets(item->nom,ITEM_NAME_LENGTH,stdin);
@@ -225,6 +228,13 @@ void saisieObjet(Item* item)
         item->lieu[strlen(item->lieu)-1] = '\0';
     // videBuffer();
     system("clear");
+
+    printf("Entrez le nombre de jours pendant lesquels l'objet sera en enchère :\n");
+    scanf("%u",&item->fermetureEnchere);
+    item->fermetureEnchere=calculFinEnchere(item->fermetureEnchere); 
+    videBuffer();
+    system("clear");
+
 }
 
 void EnregDansFichierObjet (Item* item, UserAccount* account)
@@ -237,7 +247,7 @@ void EnregDansFichierObjet (Item* item, UserAccount* account)
     }
     else
     {
-        fprintf(sortie,"%lu \n %s \n %d \n %s \n %s \n", account->id, item->nom, item->prixDepart, item->description, item->lieu);
+        fprintf(sortie,"%lu \n %s \n %d \n %s \n %s \n %u \n", account->id, item->nom, item->prixDepart, item->description, item->lieu, item->fermetureEnchere);
     } 
     fclose(sortie);
 }
@@ -263,7 +273,7 @@ int rechercheObjet (Item* item)
     system("clear");
 
      sortie=fopen(ITEM_FILE, "rt");
-     while ((trouve!=0) && fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s",&item->id, item->nom, &item->prixDepart, item->description, item->lieu)>0  ) // tant que la fin du fichier n'est pas atteinte
+     while ((trouve!=0) && fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item->id, item->nom, &item->prixDepart, item->description, item->lieu, &(item->fermetureEnchere))>0  ) // tant que la fin du fichier n'est pas atteinte
      {
         trouve=(strcmp(nomObjet, item->nom));
      } // fin du while
@@ -272,8 +282,9 @@ int rechercheObjet (Item* item)
     if (!trouve){
         printf("Cet objet existe bien !\n");
         printf("Voici ses informations :\nnom : %s\nprix : %d\ndescripton : %s\nlieu : %s\n", item->nom, item->prixDepart, item->description, item->lieu );
+        afficherDate(item->fermetureEnchere); 
     }else
-        printf("Malheureusement cet objet n'exste pas :-(\n");
+        printf("Malheureusement cet objet n'existe pas :-(\n");
     printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
 
     return 0;
@@ -299,16 +310,81 @@ int listeObjet()
     system("clear");
     sortie=fopen(ITEM_FILE, "rt");
     printf("========LISTE DES OBJETS======== \n\n");
-    while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s",&item.id, item.nom, &item.prixDepart, item.description, item.lieu)>0  ) // tant que la fin du fichier n'est pas atteinte
+    while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prixDepart, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
     {
        printf("Nom : %s\nPrix de depart : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prixDepart, item.description, item.lieu);
+       afficherDate(item.fermetureEnchere);
        printf("================================\n");
     } // fin du while
 
     printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
     fclose(sortie);
-
     return 0;
 }
+
+unsigned calculFinEnchere(int nbrjour){
+    printf("timestamp : %u \n timefinEnchere : %u\n",(unsigned)time(NULL), (unsigned)(time(NULL)+(nbrjour*86400)));
+    getchar();getchar();
+    return ((time_t)time(NULL)+(nbrjour*86400));
+}
+
+void afficherDate(time_t finEnchere){
+    struct tm * dt;
+    char b[15];
+    dt = localtime(&finEnchere);
+    strftime(b, sizeof(b), "%m-%d-%H-%M-%y", dt);
+    printf("Date fin enchere (Mois-Jour-Heure-minute-seconde): %s\n", b);
+}
+
+int isDateOut(unsigned date){
+    time_t ts=(time_t)time(NULL); //timestamp
+    return (ts>date)? TRUE : FALSE ; 
+}
+
+// void nettoyerFichierObjet(){
+//     FILE *sortie;
+//     Item item;
+//     videBuffer();
+//     system("clear");
+//     sortie=fopen(ITEM_FILE, "rt");
+//     while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prixDepart, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
+//     {
+//         if (isDateOut(item.fermetureEnchere))
+//         {
+//             supprimerObjet(item.id);
+//         }
+//     }
+//     fclose(sortie);
+// }
+// void supprimerObjet(long int id){
+//     int pos=0; 
+//     int trouve=0; 
+//     fichier=fopen(ITEM_FILE, "r+");
+
+// rewind(fichier); //On se place au début du fichier 
+// }
+
+
+void test(){
+    time_t ts=(time_t)time(NULL)+(-2*86400); //timestamp
+    time_t t=(time_t)time(NULL)+(2*86400);
+
+     system("clear");
+    printf("%d\n", isDateOut(ts) );
+    printf("%d\n", isDateOut(t) );
+getchar();getchar();
+
+    printf("Fin...");
+    getchar();
+}
+/*
+    Transformations jours en secondes :
+    timestamp + (nbr jours * 86400)
+    dt = localtime(&ts);
+     // use any strftime format spec here
+     strftime(b, sizeof(b), "%m%d%H%M%y", dt);
+     fprintf(stdout, "%s", b);
+
+*/
 
 

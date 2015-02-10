@@ -8,9 +8,9 @@
 
 /********A faire********\
  *
- * - 
- * - Voir vos objets en vente
- * - encherir
+ * - SUPPRESSION D'UN OBJET a faire imperativement ou pas
+ * - Voir vos objets en vente (rajouter l'id du vendeur)
+ * - ENcherir
  * - 
 */
 
@@ -34,7 +34,6 @@ int main(void)
 	Item item;
 	while( (choix = menuAccueil()) != MENU_CHOICE_QUIT ){
 		switch(choix){
-
 			case MENU_CHOICE_MAIN_ANONYMOUS:
 				while((choix = menuPrincipalAnonyme()) != MENU_CHOICE_QUIT){
 				    switch(choix)
@@ -57,11 +56,9 @@ int main(void)
 				}
 				system("clear");
 			break;
-
 			case MENU_CHOICE_MAIN_ACCOUNT_CREATION:
 				nouvelUtilisateur();
 			break;
-
 			case MENU_CHOICE_MAIN_CONNECTION:
 				if ((connexion(&account)) && (account.type > 0 )){
 					switch(account.type)
@@ -75,8 +72,7 @@ int main(void)
 							        	listeObjet();
 							            break;
 							        case MENU_CHOICE_MAIN_SEARCH:
-							            //Recherche d'un objet
-							        	
+							            //Recherche d'un objet							        	
 							        	rechercheObjet(&item);
 							            break;
 							        case MENU_CHOICE_QUIT:
@@ -136,7 +132,9 @@ int main(void)
 					getchar();
 				}
 			break;
-
+			case 9:
+				test();
+				break;
 			default:
 			    printf("\n\t\t Votre choix est invalide ...\n\n");
 			break;
@@ -148,7 +146,6 @@ int main(void)
 
     videBuffer();
     fgetc(stdin); // équivaut à une pause
-
 
     return 0;
 }

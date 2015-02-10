@@ -46,8 +46,8 @@
 		long int idVendeur ;
 		long int idAcheteur ;
 		int enchereMax ; 
-		long int ouvertureEnchere ;
-		long int fermetureEnchere ;
+		// long int ouvertureEnchere ;
+		unsigned fermetureEnchere ;
  		//char* Categorie ;
 	 	char nom[ITEM_NAME_LENGTH] ;
 	 	char description[ITEM_DESCRIPTION_LENGTH] ;  
@@ -112,6 +112,15 @@
 	int rechercheObjet(Item* item);
 	int connexion(UserAccount* account);
 	int listeObjet();
+
+	unsigned calculFinEnchere(int nbrjour);
+	void afficherDate(time_t finEnchere);
+	void nettoyerFichierObjet();
+	void supprimerObjet(long int id);
+
+
+	/* Foncton de tests */
+	void test();
 
 
 
