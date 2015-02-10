@@ -4,10 +4,6 @@
 #include <string.h>
 #include <sys/types.h>
 
-#ifdef WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -15,7 +11,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <strings.h>
-#endif
 
 #include <errno.h>
 
@@ -24,13 +19,6 @@
 #define TRUE 1
 #define FALSE 0
 #define LONGUEUR_TAMPON 4096
-
-
-#ifdef WIN32
-#define perror(x) printf("%s : code d'erreur : %d\n", (x), WSAGetLastError())
-#define close closesocket
-#define socklen_t int
-#endif
 
 /* Variables cachees */
 
@@ -51,19 +39,14 @@ int Initialisation(char *port) {
     int n;
     const int on = 1;
     struct addrinfo hints, *res, *ressave;
+<<<<<<< HEAD
+=======
+    char port[] = SERVER_PORT;
 
-    #ifdef WIN32
-        WSADATA wsaData;
-        if (WSAStartup(0x202,&wsaData) == SOCKET_ERROR)
-        {
-            fprintf(stderr, "WSAStartup() failed, error : %d\n", WSAGetLastError()) ;
-            WSACleanup();
-            exit(1);
-        }
-        memset(&hints, 0, sizeof(struct addrinfo));
-    #else
+>>>>>>> 8545051da3e68de5061368e86a9622d2229d8720
+
     bzero(&hints, sizeof(struct addrinfo));
-    #endif
+
 
     hints.ai_flags = AI_PASSIVE;
     hints.ai_family = AF_UNSPEC;
@@ -81,9 +64,7 @@ int Initialisation(char *port) {
             continue;       /* error, try next one */
 
         setsockopt(listenSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
-#ifdef BSD
-        setsockopt(listenSocket, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on));
-#endif
+
         if (bind(listenSocket, res->ai_addr, res->ai_addrlen) == 0)
             break;          /* SUCESSs */
 
@@ -99,7 +80,7 @@ int Initialisation(char *port) {
 
     freeaddrinfo(ressave);
     listen(listenSocket, 4);
-    printf("Init sucess\n");
+    printf("Init sucess! Socket listening and bound to port: %s\n", port);
 
     return 1;
 }
@@ -112,13 +93,15 @@ int AttenteClient() {
     struct sockaddr *clientAddr;
     char machine[NI_MAXHOST];
 
+    printf("Attente d'une connexion sur le socket...\n");
+
     clientAddr = (struct sockaddr*) malloc(adressLength);
     mainSocket = accept(listenSocket, clientAddr, &adressLength);
     if (mainSocket == -1) {
         perror("AttenteClient, erreur de accept.");
         return 0;
     }
-    if(getnameinfo(clientAddr, adressLength, machine, NI_MAXHOST, NULL, 0, 0) == 0) {
+    if(getnameinfo(clientAddr, adressLength, machine, NI_MAXHOST, NULL, 0, NI_NUMERICHOST) == 0) {
         printf("Client sur la machine d'adresse %s connecte.\n", machine);
     } else {
         printf("Client anonyme connecte.\n");
@@ -150,8 +133,8 @@ char *Reception() {
     while(!fini) {
         /* on cherche dans le tampon courant */
         while((bufferEnd > bufferStart) && (!trouve)) {
-            //fprintf(stderr, "Boucle recherche char : %c(%x), index %d debut tampon %d.\n",
-            //      clientBuffer[bufferStart], clientBuffer[bufferStart], index, bufferStart);
+            fprintf(stderr, "Boucle recherche char : (%x), index %d debut tampon %d.\n",
+                   clientBuffer[bufferStart], index, bufferStart);
             if (clientBuffer[bufferStart]=='\n')
                 trouve = TRUE;
             else
@@ -163,18 +146,21 @@ char *Reception() {
             message[index] = '\0';
             bufferStart++;
             fini = TRUE;
-            //fprintf(stderr, "trouve\n");
-#ifdef WIN32
-            return _strdup(message);
-#else
+            fprintf(stderr, "trouve\n");
+
             return strdup(message);
-#endif
+
         } else {
             /* il faut en lire plus */
             bufferStart = 0;
-            //fprintf(stderr, "recv\n");
+            fprintf(stderr, "recv\n");
             retour = recv(mainSocket, clientBuffer, BUFFER_LENGTH, 0);
-            //fprintf(stderr, "retour : %d\n", retour);
+            fprintf(stderr, "retour : %d\n", retour);
+
+            int i;
+            for (i = 0; i<retour; i++)
+                fprintf(stderr, "clientBuffer[%u]=%u\n", i, clientBuffer[i]);
+
             if (retour < 0) {
                 perror("Reception, erreur de recv.");
                 return NULL;
@@ -185,11 +171,9 @@ char *Reception() {
                 if(index > 0) {
                     message[index++] = '\n';
                     message[index] = '\0';
-#ifdef WIN32
-                    return _strdup(message);
-#else
+
                     return strdup(message);
-#endif
+
                 } else {
                     return NULL;
                 }

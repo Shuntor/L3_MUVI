@@ -1,6 +1,11 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
+<<<<<<< HEAD
+=======
+#include "protocole.h"
+
+>>>>>>> 8545051da3e68de5061368e86a9622d2229d8720
 /* Initialisation.
  * Connexion au serveur sur la machine donnee.
  * Utilisez localhost pour un fonctionnement local.

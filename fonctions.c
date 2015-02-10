@@ -247,16 +247,33 @@ void EnregDansFichierObjet (Item* item, UserAccount* account)
     }
     else
     {
+<<<<<<< HEAD
         fprintf(sortie,"%lu \n %s \n %d \n %s \n %s \n %u \n", account->id, item->nom, item->prixDepart, item->description, item->lieu, item->fermetureEnchere);
+=======
+        fprintf(sortie,"%lu \n%lu \n %s \n %d \n %s \n %s \n", account->id, item->id, item->nom, item->prixDepart, item->description, item->lieu);
+>>>>>>> 8545051da3e68de5061368e86a9622d2229d8720
     } 
     fclose(sortie);
 }
 
 void nouvelObjet(UserAccount* account){
     
+/*    long long id; */
+    srand(time(NULL));
+
+/*    id = rand();
+    id = id | ((uint64_t)time(NULL) << 16);*/
+
+
     Item item;
 
     saisieObjet(&item);
+
+    item.idVendeur = account->id;
+    item.idAcheteur = 0;
+    item.ouvertureEnchere = (unsigned)time(NULL);
+    item.id = rand();
+
     EnregDansFichierObjet (&item, account);
 }
 
