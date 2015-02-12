@@ -363,7 +363,7 @@ void seeSelfItem(UserAccount* account){
     }
 
     // nettoyerFichierObjet(account->id);
-    nettoyerFichierObjet(long int idVendeur); //On supprime les objets qu'il a vendu du fichier
+    nettoyerFichierObjet(account->id); //On supprime les objets qu'il a vendu du fichier
     printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
     fclose(sortie);
 }
@@ -377,7 +377,7 @@ void nettoyerFichierObjet(long int idVendeur){ //Pas fini
     while(fscanf(sortie,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere) > 0); // tant que la fin du fichier n'est pas atteinte
     {
         tabItem[i]=item;
-        if (strcmp(item.idVendeur,idVendeur)==0 && isDateOut(item.fermetureEnchere))
+        if (item.idVendeur==idVendeur && isDateOut(item.fermetureEnchere))
         {
             trouve=1;
             i--; 
@@ -385,7 +385,6 @@ void nettoyerFichierObjet(long int idVendeur){ //Pas fini
         i++;
     }
     i--;
-    printf("%lu \n %lu \n %s \n %d \n %s \n %s \n %u \n", tabItem[i].id, tabItem[i].idVendeur, tabItem[i].nom, tabItem[i].prix, tabItem[i].description, tabItem[i].lieu, tabItem[i].fermetureEnchere);getchar();
     fclose(sortie);
     if (trouve)
     {
