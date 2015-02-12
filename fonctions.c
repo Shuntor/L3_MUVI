@@ -347,15 +347,18 @@ void seeSelfItem(UserAccount* account){
     printf("========LISTE DE VOS OBJETS ENCORE EN VENTE======== \n\n");
     while (fscanf(sortie,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
     {
-        if (!isDateOut(item.fermetureEnchere)) 
+        if (item.idVendeur == account->id)
         {
-            printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
-            afficherDate(item.fermetureEnchere);
-            printf("================================\n");
-        }else
-        { //On stocks les objets vendus 
-            i++;
-            vendu[i]=item;
+            if (!isDateOut(item.fermetureEnchere)) 
+            {
+                printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
+                afficherDate(item.fermetureEnchere);
+                printf("================================\n");
+            }else
+            { //On stocks les objets vendus 
+                i++;
+                vendu[i]=item;
+            }
         }
     } // fin du while
 
@@ -386,57 +389,61 @@ void nettoyerFichierObjet(long int idVendeur){ //Pas fini
 }
 
 int encherir(long int idObjet, long int idacheteur, int prix){
-    FILE *sortie;
-    Item item;
-    File f;
-    int i=0,cond;
-    Item* deb;
+    // FILE *sortie;
+    // Item item;
+    // File f;
+    // int i=0,cond;
+    // Item* deb;
 
-    sortie=fopen(ITEM_FILE, "rt+");
+    // sortie=fopen(ITEM_FILE, "rt+");
  
-    while(fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere) > 0); // tant que la fin du fichier n'est pas atteinte
-    {
-        if (i=0)
-        {
-            f.item=item;
-            deb=&f.item;
+    // while(fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere) > 0); // tant que la fin du fichier n'est pas atteinte
+    // {
+    //     if (i=0)
+    //     {
+    //         f.item=item;
+    //         deb=&f.item;
 
-        }else
-        {
-            f.suivant = (Item)malloc(sizeof(Item));
-            f.suivant = item;
-        }
+    //     }else
+    //     {
+    //         f.suivant = (Item)malloc(sizeof(Item));
+    //         f.suivant = item;
+    //     }
 
-        tabItem[i]=item;
-        if (item.id==idObjet)
-        {
-            tabItem[i].idAcheteur=idacheteur;
-            tabItem[i].prix=prix;
-        }
-        i++
-    }
-    //On supprime le contenu du fichier pour reécrire à partir du tableau et ainsi le mettre à jour
-    fclose(sortie);
-    sortie=fopen(ITEM_FILE, "w+");
-    while()
+    //     tabItem[i]=item;
+    //     if (item.id==idObjet)
+    //     {
+    //         tabItem[i].idAcheteur=idacheteur;
+    //         tabItem[i].prix=prix;
+    //     }
+    //     i++
+    // }
+    // //On supprime le contenu du fichier pour reécrire à partir du tableau et ainsi le mettre à jour
+    // fclose(sortie);
+    // sortie=fopen(ITEM_FILE, "w+");
+    // while()
 
-    fclose(sortie);
+    // fclose(sortie);
 }
 
 void serialiser(Item* item, char* chaineRes)
 {
-
+    char chaine[200];
      //Il faut passer la chaine dans laquelle tout est serialisé en paramètre, celle-ci doit avoir une taille max de la lg du champ données
 
-
-    strcat(strcpy(chaineRes, item.id),"_") ;
-    strcat(strcat(item.idVendeur , chaineRes),"_");  
-    strcat(strcat(item.idAcheteur , chaineRes),"_");
-    strcat(strcat(item.fermetureEnchere , chaineRes),"_");
-    strcat(strcat(item.nom  , chaineRes),"_");
-    strcat(strcat(item.description  , chaineRes),"_");
-    strcat(strcat(item.prix , chaineRes),"_");
-    strcat(strcat(item.lieu , chaineRes),"_");
+    sprintf(chaine,"%ld",(long int)item->id);
+    strcat(strcpy(chaineRes, chaine ),"_") ;
+    sprintf(chaine,"%ld",(long int)item->idVendeur);
+    strcat(strcat(chaine , chaineRes),"_");  
+    sprintf(chaine,"%ld",(long int)item->idAcheteur);
+    strcat(strcat(chaine , chaineRes),"_");
+    sprintf(chaine,"%ld",(long int)item->fermetureEnchere);
+    strcat(strcat(chaine , chaineRes),"_");
+    strcat(strcat(item->nom  , chaineRes),"_");
+    strcat(strcat(item->description  , chaineRes),"_");
+    sprintf(chaine,"%d",item->prix);
+    strcat(strcat(chaine , chaineRes),"_");
+    strcat(strcat(item->lieu , chaineRes),"_");
 
 }
 
@@ -451,8 +458,10 @@ void serialiser(Item* item, char* chaineRes)
 
 void test(){
     // char *message;
-   
-
+   // Item item;
+   // item.id=123475;
+   // item.nom="aaaaaaaa";
+   // item.description="bbbbbbb";
     
 }
 /*
