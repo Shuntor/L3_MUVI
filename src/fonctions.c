@@ -49,12 +49,12 @@ int verifMail(char *mail, int taille)
     // test '@'
     for(i=0;i<taille;i++){
         if((mail[i] == '@'))
-            arobase ++;
+            arobase=i;
         if((mail[i] == '.'))
-            dot++;
+            dot=i;
     }
 
-    return (arobase == 1 && dot == 1)? TRUE : FALSE;
+    return ((arobase < dot) && (dot < taille-1)) ? TRUE : FALSE;
 }
 
 void saisieUtilisateur(UserAccount * account)
@@ -128,19 +128,21 @@ void saisieUtilisateur(UserAccount * account)
 }
 
 
-void EnregDansFichier (UserAccount* account)
+int EnregDansFichier (UserAccount* account)
 {
      FILE *sortie;
        sortie=fopen(ACCOUNT_FILE,"at"); 
        if (sortie == NULL)
        {
             printf("Un probleme est survenue lors de la tentative d'enregistrement de vos donnees dans le fichier\n");
+            return 1;
        }
        else
        {
             fprintf(sortie,"%lu \n %d \n %s \n %s \n %s \n %s \n", account->id, account->type, account->firstname, account->lastname, account->adress, account->mail);
-       } 
+       }
        fclose(sortie);
+       return 0;
 }
 
 int RechercheCpte (UserAccount* account, char* nomClient) //Marche bien maintenant
@@ -210,13 +212,27 @@ void client_nouvelUtilisateur()
 
 int serveur_nouvelUtilisateur(char* mess)
 {
+    int ret;
+    UserAccount *u;
+    char *d;
+    d = extraire_donnees(mess);
+    u = deserialiser_account(d);
+    ret = EnregDansFichier(u);
+    if (ret == 0)
+        serveur_emission("107 _$");
+    else
+        serveur_emission("207 _$");
+    free(d);
+    free(u);
+    return 0;
+}
+
+char* extraire_donnees(char* mess)
+{
     char *s = strdup(mess + 4*(sizeof(char)));
     s[strlen(s)-1] = '\0';
     s[strlen(s)-2] = '\0';
-    EnregDansFichier(deserialiser_account(s));
-    serveur_emission("107 _$");
-    free(s);
-    return 0;
+    return s;
 }
 
 void saisieObjet(Item* item)
@@ -453,7 +469,7 @@ int encherir(long int idacheteur){
     videBuffer();
 
     fic=fopen(ITEM_FILE, "rt"); 
-    printf("test 1\n");
+    // printf("test 1\n");
     // fseek(fic,0,SEEK_SET);
     // fscanf(fic,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere);printf("%s\n",item.nom );getchar();
     while(fscanf(fic,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0 ) // tant que la fin du fichier n'est pas atteinte
@@ -470,7 +486,7 @@ int encherir(long int idacheteur){
     }
     i--;
     fclose(fic);
-    printf("test 2\n");
+    // printf("test 2\n");
     if (trouve)
     {
         //On supprime le contenu du fichier pour reécrire à partir du tableau et ainsi le mettre à jour
@@ -492,7 +508,7 @@ char *serialiser_item(Item* i)
       i->id, i->idVendeur, i->idAcheteur, i->fermetureEnchere, i->nom, i->description,
       i->prix, i->lieu);
 
-    strdup(buffer);
+    return strdup(buffer);
 
 }
 
@@ -552,7 +568,7 @@ char *serialiser_account(UserAccount* a)
     sprintf(buffer, "%ld_%d_%s_%s_%s_%s",
       a->id, a->type, a->firstname, a->lastname, a->adress, a->mail);
 
-    strdup(buffer);
+    return strdup(buffer);
 
 }
 

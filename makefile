@@ -1,32 +1,35 @@
+SRCDIR=src
+BINDIR=bin
+OBJDIR=obj
 
-# définition des cibles particulières
-.PHONY: clean, mrproper
- 
-# désactivation des règles implicites
-#.SUFFIXES:
+SOURCES_CLIENT=transport.c fonctions.c test_client.c
+SOURCES_SERVEUR=transport.c fonctions.c test_serveur.c
+OBJECTSPRE_C=$(SOURCES_CLIENT:%.c=%.o)
+OBJECTSPRE_S=$(SOURCES_SERVEUR:%.c=%.o)
+OBJECTSLINKER_C=$(OBJECTSPRE_C:%=$(OBJDIR)/%)
+OBJECTSLINKER_S=$(OBJECTSPRE_S:%=$(OBJDIR)/%)
+EXECUTABLE=client serveur
 
-# définition des variables
 CC=gcc
-CFLAGS=-W -Wall
+CFLAGS=-c -W -Wall -I$(SRCDIR)
 LDFLAGS=
-SOURCES=mainClient.c interfaceClient.c fonctions.c
-OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=client
 
-# all
 all: $(EXECUTABLE)
-	
-$(EXECUTABLE): $(OBJECTS) 
-	$(CC) -o $@ $^ $(LDFLAGS) 
 
-.c.o:
-	$(CC) -o $@ -c $< $(CFLAGS) 
+client: $(OBJECTSPRE_C)
+	mkdir -p $(BINDIR)
+	$(CC) $(LDFLAGS) $(OBJECTSLINKER_C) -o $(BINDIR)/$@
 
-# clean
+serveur: $(OBJECTSPRE_S)
+	mkdir -p $(BINDIR)
+	$(CC) $(LDFLAGS) $(OBJECTSLINKER_S) -o $(BINDIR)/$@
+
+%.o: $(SRCDIR)/%.c
+	mkdir -p $(OBJDIR)
+	$(CC) $(CFLAGS) $< -o $(OBJDIR)/$@
+
+.PHONY=clean
+
 clean:
-		rm -rf *.bak rm -rf *.o
- 
-# mrproper
-mrproper: clean
-		rm -rf $(EXEC)
-
+	rm -rf $(BINDIR)/*
+	rm -rf $(OBJDIR)/*

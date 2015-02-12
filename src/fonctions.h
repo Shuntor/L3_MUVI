@@ -84,7 +84,7 @@
 	 * D : Insere un compte dans le fichier de comptes
 	 * R : TRUE or FALSE
 	*/
-	void EnregDansFichier (UserAccount* account);
+	int EnregDansFichier (UserAccount* account);
 	
 	/* N : RechercheCpte
 	 * D : Permet de rechercher un compte dans le fichier de compte à l'aide du nom de l'utilisateur
@@ -195,6 +195,23 @@
 	*/
 	UserAccount *deserialiser_account(char* s);
 
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	char *extraire_donnees(char* mess);
+
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	void client_nouvelUtilisateur();
+
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	int serveur_nouvelUtilisateur(char* mess);
 
 	/* Fonction de tests */
 	void test();
