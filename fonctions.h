@@ -52,7 +52,7 @@
 	 	int prix ;
 	 	//int quantite ;
 	 	char lieu[ITEM_LOCATION_LENGTH];
-	}Item;
+	} Item;
 
 
 
