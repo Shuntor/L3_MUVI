@@ -4,13 +4,14 @@
 
 #include "transport.h"
 #include "fonctions.h"
+#include "protocole.h"
 
 int main()
 {
     char *message = NULL;
     int fini = 0;
 
-    serveur_init("5050");
+    serveur_init(SERVER_PORT);
 
     while(1)
     {
@@ -30,10 +31,12 @@ int main()
                 if (strstr(message, "ANC") == message)
                     serveur_nouvelUtilisateur(message);
                 else if (strstr(message, "ACL") == message)
-                    // serveur_auth_client();
+                    serveur_auth_user(message);
                 else if (strstr(message, "SCL") == message)
+                    NULL;
                     // serveur_suppr_client();
                 else if (strstr(message, "DME") == message)
+                    NULL;
                     // serveur_nouvel_objet();
             }
             else

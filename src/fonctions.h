@@ -55,6 +55,11 @@
 		Item * suivant;
 	}File;
 
+	/* N : str_valide
+	 * D : vérifie si une chaine de caractère est légale (pas de "_" ou "$")
+	 * R : true si valide, false si pas valide
+	*/
+	int str_valide(char* s);
 
 	/* N : videBuffer.
 	 * D : vide le buffer
@@ -212,6 +217,18 @@
 	 * R : 
 	*/
 	int serveur_nouvelUtilisateur(char* mess);
+
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	int client_auth_user(UserAccount* a);
+
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	int serveur_auth_user(char *mess);
 
 	/* Fonction de tests */
 	void test();

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "fonctions.h"
 #include "transport.h"
@@ -93,40 +94,53 @@ void saisieUtilisateur(UserAccount * account)
     //Identifiant
     account->id=time(NULL);
 
-    system("clear");
+    do {
 
-    videBuffer();
-    printf("Entrez votre prénom :\n");
-    fgets(account->firstname,USERACCOUNT_FIRSTNAME_LENGTH,stdin);
-    if(strlen(account->firstname) < USERACCOUNT_FIRSTNAME_LENGTH-1)
-        account->firstname[strlen(account->firstname)-1] = '\0';
-    system("clear");
+        system("clear");
+        printf("-----------------------------------------------\n");
+        printf("RAPPEL: Les caractères '_' et '$' sont ILLEGAUX\n");
+        printf("-----------------------------------------------\n\n");
 
-    printf("Entrez votre nom de famille :\n");
-    fgets(account->lastname,USERACCOUNT_LASTNAME_LENGTH,stdin);
-    if(strlen(account->lastname) < USERACCOUNT_LASTNAME_LENGTH-1)
-        account->lastname[strlen(account->lastname)-1] = '\0';
-    // videBuffer();
-    system("clear");
+        videBuffer();
+        printf("Entrez votre prénom :\n");
+        fgets(account->firstname,USERACCOUNT_FIRSTNAME_LENGTH,stdin);
+        if(strlen(account->firstname) < USERACCOUNT_FIRSTNAME_LENGTH-1)
+            account->firstname[strlen(account->firstname)-1] = '\0';
+        system("clear");
 
-    printf("Entrez votre adresse :\n");
-    fgets(account->adress,USERACCOUNT_ADRESS_LENGTH,stdin);
-    if(strlen(account->adress) < USERACCOUNT_LASTNAME_LENGTH-1)
-        account->adress[strlen(account->adress)-1] = '\0';
-    // videBuffer();
-    system("clear");
-
-    do
-    {
-        printf("Entrez votre adresse e-mail :\n");
-        fgets(account->mail,USERACCOUNT_MAIL_LENGTH,stdin);
-        if(strlen(account->mail) < USERACCOUNT_MAIL_LENGTH-1)
-            account->mail[strlen(account->mail)-1] = '\0';
+        printf("Entrez votre nom de famille :\n");
+        fgets(account->lastname,USERACCOUNT_LASTNAME_LENGTH,stdin);
+        if(strlen(account->lastname) < USERACCOUNT_LASTNAME_LENGTH-1)
+            account->lastname[strlen(account->lastname)-1] = '\0';
         // videBuffer();
-    } while (!verifMail(account->mail,strlen(account->mail)));
-    system("clear");
+        system("clear");
+
+        printf("Entrez votre adresse :\n");
+        fgets(account->adress,USERACCOUNT_ADRESS_LENGTH,stdin);
+        if(strlen(account->adress) < USERACCOUNT_LASTNAME_LENGTH-1)
+            account->adress[strlen(account->adress)-1] = '\0';
+        // videBuffer();
+        system("clear");
+
+        do
+        {
+            printf("Entrez votre adresse e-mail :\n");
+            fgets(account->mail,USERACCOUNT_MAIL_LENGTH,stdin);
+            if(strlen(account->mail) < USERACCOUNT_MAIL_LENGTH-1)
+                account->mail[strlen(account->mail)-1] = '\0';
+            // videBuffer();
+        } while (!verifMail(account->mail,strlen(account->mail)));
+        system("clear");
+    } while (!str_valide(account->firstname) || !str_valide(account->lastname)
+        || !str_valide(account->adress) || !str_valide(account->mail));
 }
 
+int str_valide(char *s)
+{
+    if (strstr(s, "_") == NULL && strstr(s, "$") == NULL)
+        return true;
+    return false;
+}
 
 int EnregDansFichier (UserAccount* account)
 {
@@ -339,9 +353,63 @@ int connexion(UserAccount* account)
     printf("Veuillez saisir votre nom :\n");
     fgets(lastname,USERACCOUNT_LASTNAME_LENGTH,stdin);
     if(strlen(lastname) < USERACCOUNT_LASTNAME_LENGTH-1)
-        lastname[strlen(lastname)-1] = '\0';;
+        lastname[strlen(lastname)-1] = '\0';
     system("clear");
     return (RechercheCpte(account, lastname)) ;
+}
+
+int client_auth_user(UserAccount* a)
+{
+    char *reponse;
+    char buffer[4096];
+
+    char lastname[USERACCOUNT_LASTNAME_LENGTH];
+    videBuffer();
+    printf("Veuillez saisir votre nom de famille :\n");
+    fgets(lastname,USERACCOUNT_LASTNAME_LENGTH,stdin);
+    if(strlen(lastname) < USERACCOUNT_LASTNAME_LENGTH-1)
+        lastname[strlen(lastname)-1] = '\0';
+    system("clear");
+
+    a->id=0;
+    a->type=0;
+    strncpy(a->firstname,"0", USERACCOUNT_FIRSTNAME_LENGTH);
+    strncpy(a->lastname, lastname, USERACCOUNT_LASTNAME_LENGTH);
+    (a->lastname)[USERACCOUNT_LASTNAME_LENGTH-1] = '\0';
+    strncpy(a->adress,"0", USERACCOUNT_ADRESS_LENGTH);
+    strncpy(a->mail,"0", USERACCOUNT_MAIL_LENGTH);
+
+    sprintf(buffer, "ACL %s_$", serialiser_account(a));
+
+    client_emission(buffer);
+    reponse = client_reception();
+
+    if (strstr(reponse, "100") == reponse)
+    {
+        a = deserialiser_account(extraire_donnees(reponse));
+        return a->type;
+    }
+    return 0;
+}
+
+int serveur_auth_user(char *mess)
+{
+    UserAccount *a;
+    char* lastname;
+    char buffer[4096];
+
+    a = deserialiser_account(extraire_donnees(mess));
+    lastname = strdup(a->lastname);
+
+    if (RechercheCpte(a, lastname))
+    {
+        sprintf(buffer, "100 %s_$", serialiser_account(a));
+        serveur_emission(buffer);
+    }
+    serveur_emission("200 _$");
+    free(lastname);
+    return 0;
+
 }
 
 int listeObjet()
