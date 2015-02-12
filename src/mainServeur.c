@@ -25,9 +25,16 @@ int main()
 
             if(message != NULL) 
             {
-                printf("%s\n", message);
+                printf("inc_taille: %d bytes\n", (int)strlen(message));
+                printf("inc: %s\n", message);
                 if (strstr(message, "ANC") == message)
                     serveur_nouvelUtilisateur(message);
+                else if (strstr(message, "ACL") == message)
+                    // serveur_auth_client();
+                else if (strstr(message, "SCL") == message)
+                    // serveur_suppr_client();
+                else if (strstr(message, "DME") == message)
+                    // serveur_nouvel_objet();
             }
             else
             {

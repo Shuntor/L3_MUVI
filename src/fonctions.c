@@ -123,7 +123,7 @@ void saisieUtilisateur(UserAccount * account)
         if(strlen(account->mail) < USERACCOUNT_MAIL_LENGTH-1)
             account->mail[strlen(account->mail)-1] = '\0';
         // videBuffer();
-    }while(!verifMail(account->mail,strlen(account->mail)));
+    } while (!verifMail(account->mail,strlen(account->mail)));
     system("clear");
 }
 

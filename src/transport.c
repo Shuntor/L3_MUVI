@@ -228,12 +228,12 @@ char *serveur_reception() {
         {
             /* il faut en lire plus */
             debut_tampon_serveur = 0;
-            fprintf(stderr, "recv\n");
+            fprintf(stderr, "recv()...\n");
             retour = recv(socket_serveur, tampon_serveur, LONGUEUR_TAMPON, 0);
-            fprintf(stderr, "retour : %d\n", retour);
-            int i;
-            for (i = 0; i<retour; i++)
-            fprintf(stderr, "tampon_serveur[%u]=%c\n", i, tampon_serveur[i]);
+            fprintf(stderr, "taille_recv: %d bytes\n", retour);
+            // int i;
+            // for (i = 0; i<retour; i++)
+            // fprintf(stderr, "tampon_serveur[%u]=%c\n", i, tampon_serveur[i]);
             if (retour < 0) {
                 perror("serveur_reception(), erreur de recv");
                 return NULL;
@@ -310,12 +310,12 @@ char *client_reception() {
         {
             /* il faut en lire plus */
             debut_tampon_client = 0;
-            fprintf(stderr, "recv\n");
+            // fprintf(stderr, "recv\n");
             retour = recv(socket_client, tampon_client, LONGUEUR_TAMPON, 0);
-            fprintf(stderr, "retour : %d\n", retour);
-            int i;
-            for (i = 0; i<retour; i++)
-            fprintf(stderr, "tampon_client[%u]=%c\n", i, tampon_client[i]);
+            // fprintf(stderr, "retour : %d\n", retour);
+            // int i;
+            // for (i = 0; i<retour; i++)
+            // fprintf(stderr, "tampon_client[%u]=%c\n", i, tampon_client[i]);
             if (retour < 0) {
                 perror("client_reception(), erreur de recv");
                 return NULL;
@@ -381,7 +381,7 @@ int client_emission(char *message) {
         perror("client_emission(), problème lors du send");
         return -1;
     }
-    printf("Emission de %d bytes\n", emis);
+    // printf("Emission de %d bytes\n", emis);
     return emis;
 }
 
@@ -429,7 +429,8 @@ int serveur_emission(char *message) {
         perror("serveur_emission(), problème lors du send");
         return -1;
     }
-    printf("Emission de %d bytes\n", emis);
+    printf("taille_out: %d bytes\n", emis);
+    printf("out: %s\n", message);
     return emis;
 }
 

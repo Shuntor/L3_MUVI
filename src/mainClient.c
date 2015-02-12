@@ -38,7 +38,8 @@ int main(void)
 
 	if (client_init(SERVER_ADDRESS, SERVER_PORT) != 0)
 	{
-		fprintf(stderr, "init_client() failed. Exiting.\n");
+		fprintf(stderr, "Connexion au serveur impossible !\n");
+		fprintf(stderr, "Etes-vous sur que celui-ci est démarré correctement ?\n");
 		exit(1);
 	}
 
@@ -68,7 +69,7 @@ int main(void)
 				system("clear");
 			break;
 			case MENU_CHOICE_MAIN_ACCOUNT_CREATION:
-				nouvelUtilisateur();
+				client_nouvelUtilisateur();
 			break;
 			case MENU_CHOICE_MAIN_CONNECTION:
 				if ((connexion(&account)) && (account.type > 0 )){
@@ -156,11 +157,12 @@ int main(void)
 			break;
 		}
 	}
+	client_terminaison();
 
 	system("clear");
-    printf("\n\t\t MUVI vous souhaite une bonne journée et espère vous revoir très bientôt !\n\n");
+    printf("\n\t\tMUVI vous souhaite une bonne journée et espère vous revoir très bientôt !\n\n");
 
-    videBuffer();
+    // videBuffer();
     fgetc(stdin); // équivaut à une pause
 
     return 0;
