@@ -45,13 +45,11 @@
 		long int id ;
 		long int idVendeur ;
 		long int idAcheteur ;
-		int enchereMax ; 
-		// long int ouvertureEnchere ;
 		unsigned fermetureEnchere ;
  		//char* Categorie ;
 	 	char nom[ITEM_NAME_LENGTH] ;
 	 	char description[ITEM_DESCRIPTION_LENGTH] ;  
-	 	int prixDepart ;
+	 	int prix ;
 	 	//int quantite ;
 	 	char lieu[ITEM_LOCATION_LENGTH];
 	}Item;
@@ -64,58 +62,107 @@
 	*/
 	void videBuffer();
 
-
-
-
 	/* N : saisieChar.
 	 * D : saisie d'un caractere, elimine les '\n' et EOF
 	 * R : retourne un caractere
 	*/
 	char saisieChar();
 
-	/*
-	 *
-	 *
+	/* N : verifMail
+	 * D : Verifie si le mail est bien structuré, présence de l'arobase et du point
+	 * R : TRUE or FALSE
 	*/
 	 int verifMail(char *mail, int taille);
 
-	/*
-	 *
-	 *
+	/* N : saisieUtilisateur
+	 * D : Permet de saisir toutes les données propres à un utilisateur
+	 * R : -
 	*/
 	void saisieUtilisateur(UserAccount * account);
-
-
-	/*
-	 *
-	 *
+	
+	/* N : insertionComtpeFichier
+	 * D : Insere un compte dans le fichier de comptes
+	 * R : TRUE or FALSE
 	*/
-	int insertionCompteFichier(UserAccount *account);
 	void EnregDansFichier (UserAccount* account);
 	
-	/*
-	 *
-	 * R : 
+	/* N : RechercheCpte
+	 * D : Permet de rechercher un compte dans le fichier de compte à l'aide du nom de l'utilisateur
+	 * R : TRUE or FALSE
 	*/
 	int RechercheCpte ( UserAccount* account, char* nomClient );
-	int LectureCompteFichier (UserAccount *user);
 
-	/*
-	 *
-	 *
+	/* N : nouvelUtilisateur
+	 * D : Créer un nouvel utilisateur
+	 * R : -
 	*/
 	void nouvelUtilisateur();
-
+	
+	/* N : saisieObjet
+	 * D : Saisir un objet
+	 * R : -
+	*/
 	void saisieObjet(Item* item);
-	void EnregDansFichierObjet (Item* item, UserAccount* account);
+	
+	/* N : EnregDansFichierObjet
+	 * D : Enregistrer un objet dans un fichier
+	 * R : -
+	*/
+	void EnregDansFichierObjet (Item* item);
+	
+	/* N : nouvelObjet
+	 * D : Créer un nouvel objet
+	 * R : -
+	*/
 	void nouvelObjet(UserAccount* account);
+	
+	/* N : rechercheObjet
+	 * D : Rechercher un objet dans le fichier d'objets
+	 * R : 0
+	*/
 	int rechercheObjet(Item* item);
+	
+	/* N : connexion
+	 * D : Connexion en recherchant uniquement le nom de l'utilisateur
+	 * R : TRUE or FALSE
+	*/
 	int connexion(UserAccount* account);
+	
+	/* N : listeObjet
+	 * D : 
+	 * R : 
+	*/
 	int listeObjet();
 
+	
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
 	unsigned calculFinEnchere(int nbrjour);
+	
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
 	void afficherDate(time_t finEnchere);
-	void nettoyerFichierObjet();
+	
+	/* N : 
+	 * D : 
+	 * R : 
+	*/	
+	void seeSelfItem(UserAccount* account);
+
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	void nettoyerFichierObjet(long int idVendeur);
+	
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
 	void supprimerObjet(long int id);
 
 

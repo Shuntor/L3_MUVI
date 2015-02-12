@@ -6,6 +6,9 @@
 #include "interfaceClient.h"
 #include "client.h"
 
+#define SERVER_PORT "25000"
+#define SERVER_ADRESS "127.0.0.1"
+
 /********A faire********\
  *
  * - SUPPRESSION D'UN OBJET a faire imperativement ou pas
@@ -93,7 +96,7 @@ int main(void)
 							        		nouvelObjet(&account);
 							            break;
 							        case MENU_CHOICE_ALREADY_SELL:
-							            	//Objets déjà en vente (même fonction que rechercher objet mais avec le nom de l'utilisateur)
+							        		seeSelfItem(&account);
 							            break;
 							        case MENU_CHOICE_QUIT:
 							            //On quitte

@@ -89,6 +89,9 @@ void saisieUtilisateur(UserAccount * account)
         }
     }while(!isValide);
 
+    //Identifiant
+    account->id=time(NULL);
+
     system("clear");
 
     videBuffer();
@@ -123,14 +126,6 @@ void saisieUtilisateur(UserAccount * account)
     system("clear");
 }
 
-// int insertionCompteFichier(UserAccount* account){ //Fonction incomplète
-//     FILE* f;
-//     if((f=fopen(ACCOUNT_FILE ,"ab"))==NULL)
-//         return(-1); //Erreur d'ouverture
-//     fwrite(account,sizeof(UserAccount),1,f);
-//     fclose(f);
-//     return TRUE;
-// }
 
 void EnregDansFichier (UserAccount* account)
 {
@@ -169,17 +164,6 @@ int RechercheCpte (UserAccount* account, char* nomClient) //Marche bien maintena
     return (trouve==0)? TRUE : FALSE;
 }
 
-// int LectureCompteFichier (UserAccount *user) //Fonction ncomplète
-// {
-//     FILE* f;
-//     if((f=fopen(ACCOUNT_FILE,"rb"))==NULL)
-//         return(-1); //Erreur d'ouverture
-//     fread(&user,sizeof(UserAccount),1,f);
-//     fclose(f);
-//     return TRUE;
-// }
-
-
 
 void nouvelUtilisateur(){
     UserAccount newAccount;
@@ -211,7 +195,7 @@ void saisieObjet(Item* item)
     system("clear");
 
     printf("Entrez le prix de départ :\n");
-    scanf("%d",&item->prixDepart);
+    scanf("%d",&item->prix);
     videBuffer();
     system("clear");
 
@@ -237,7 +221,7 @@ void saisieObjet(Item* item)
 
 }
 
-void EnregDansFichierObjet (Item* item, UserAccount* account)
+void EnregDansFichierObjet (Item* item)
 {
     FILE *sortie; 
     sortie=fopen(ITEM_FILE,"at");
@@ -247,11 +231,7 @@ void EnregDansFichierObjet (Item* item, UserAccount* account)
     }
     else
     {
-<<<<<<< HEAD
-        fprintf(sortie,"%lu \n %s \n %d \n %s \n %s \n %u \n", account->id, item->nom, item->prixDepart, item->description, item->lieu, item->fermetureEnchere);
-=======
-        fprintf(sortie,"%lu \n%lu \n %s \n %d \n %s \n %s \n", account->id, item->id, item->nom, item->prixDepart, item->description, item->lieu);
->>>>>>> 8545051da3e68de5061368e86a9622d2229d8720
+        fprintf(sortie,"%lu \n %lu \n %s \n %d \n %s \n %s \n %u \n", item->id, item->idVendeur, item->nom, item->prix, item->description, item->lieu, item->fermetureEnchere);
     } 
     fclose(sortie);
 }
@@ -270,11 +250,8 @@ void nouvelObjet(UserAccount* account){
     saisieObjet(&item);
 
     item.idVendeur = account->id;
-    item.idAcheteur = 0;
-    item.ouvertureEnchere = (unsigned)time(NULL);
-    item.id = rand();
 
-    EnregDansFichierObjet (&item, account);
+    EnregDansFichierObjet (&item);
 }
 
 int rechercheObjet (Item* item) 
@@ -290,7 +267,7 @@ int rechercheObjet (Item* item)
     system("clear");
 
      sortie=fopen(ITEM_FILE, "rt");
-     while ((trouve!=0) && fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item->id, item->nom, &item->prixDepart, item->description, item->lieu, &(item->fermetureEnchere))>0  ) // tant que la fin du fichier n'est pas atteinte
+     while ((trouve!=0) && fscanf(sortie,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item->id,&item->idVendeur, item->nom, &item->prix, item->description, item->lieu, &(item->fermetureEnchere))>0  ) // tant que la fin du fichier n'est pas atteinte
      {
         trouve=(strcmp(nomObjet, item->nom));
      } // fin du while
@@ -298,7 +275,7 @@ int rechercheObjet (Item* item)
 
     if (!trouve){
         printf("Cet objet existe bien !\n");
-        printf("Voici ses informations :\nnom : %s\nprix : %d\ndescripton : %s\nlieu : %s\n", item->nom, item->prixDepart, item->description, item->lieu );
+        printf("Voici ses informations :\nnom : %s\nprix : %d\ndescripton : %s\nlieu : %s\n", item->nom, item->prix, item->description, item->lieu );
         afficherDate(item->fermetureEnchere); 
     }else
         printf("Malheureusement cet objet n'existe pas :-(\n");
@@ -327,9 +304,9 @@ int listeObjet()
     system("clear");
     sortie=fopen(ITEM_FILE, "rt");
     printf("========LISTE DES OBJETS======== \n\n");
-    while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prixDepart, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
+    while (fscanf(sortie,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
     {
-       printf("Nom : %s\nPrix de depart : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prixDepart, item.description, item.lieu);
+       printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
        afficherDate(item.fermetureEnchere);
        printf("================================\n");
     } // fin du while
@@ -340,8 +317,8 @@ int listeObjet()
 }
 
 unsigned calculFinEnchere(int nbrjour){
-    printf("timestamp : %u \n timefinEnchere : %u\n",(unsigned)time(NULL), (unsigned)(time(NULL)+(nbrjour*86400)));
-    getchar();getchar();
+    // printf("timestamp : %u \n timefinEnchere : %u\n",(unsigned)time(NULL), (unsigned)(time(NULL)+(nbrjour*86400)));
+    // getchar();getchar();
     return ((time_t)time(NULL)+(nbrjour*86400));
 }
 
@@ -358,41 +335,75 @@ int isDateOut(unsigned date){
     return (ts>date)? TRUE : FALSE ; 
 }
 
-// void nettoyerFichierObjet(){
-//     FILE *sortie;
-//     Item item;
-//     videBuffer();
-//     system("clear");
-//     sortie=fopen(ITEM_FILE, "rt");
-//     while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prixDepart, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
-//     {
-//         if (isDateOut(item.fermetureEnchere))
-//         {
-//             supprimerObjet(item.id);
-//         }
-//     }
-//     fclose(sortie);
-// }
+void seeSelfItem(UserAccount* account){
+    FILE *sortie;
+    Item item;
+    Item vendu[10];
+    int i=0;
+    videBuffer();
+    system("clear");
+    sortie=fopen(ITEM_FILE, "rt");
+    printf("========LISTE DE VOS OBJETS ENCORE EN VENTE======== \n\n");
+    while (fscanf(sortie,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
+    {
+        if (!isDateOut(item.fermetureEnchere)) 
+        {
+            printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
+            afficherDate(item.fermetureEnchere);
+            printf("================================\n");
+        }else
+        { //On stocks les objets vendus 
+            i++;
+            vendu[i]=item;
+        }
+    } // fin du while
+
+    while(i>=1){
+        printf("\n\n!!!!!\t FELICITATION !  %s vendu au prix de %d €\t!!!!\n", vendu[i].nom, vendu[i].prix );
+        i--;
+    }
+
+    nettoyerFichierObjet(account->id);
+
+    printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
+    fclose(sortie);
+}
+
+void nettoyerFichierObjet(long int idVendeur){
+    FILE *sortie;
+    Item item;
+    videBuffer();
+    system("clear");
+    sortie=fopen(ITEM_FILE, "rt");
+    while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
+    {
+        if (isDateOut(item.fermetureEnchere) && item.idVendeur == idVendeur)
+        {
+            // supprimerObjet(item.id);
+        }
+    }
+    fclose(sortie);
+}
 // void supprimerObjet(long int id){
 //     int pos=0; 
 //     int trouve=0; 
 //     fichier=fopen(ITEM_FILE, "r+");
 
-// rewind(fichier); //On se place au début du fichier 
-// }
+// // rewind(fichier); //On se place au début du fichier 
+// // }
 
 
 void test(){
-    time_t ts=(time_t)time(NULL)+(-2*86400); //timestamp
-    time_t t=(time_t)time(NULL)+(2*86400);
+    char *message;
 
-     system("clear");
-    printf("%d\n", isDateOut(ts) );
-    printf("%d\n", isDateOut(t) );
-getchar();getchar();
 
-    printf("Fin...");
-    getchar();
+    if(Initialisation("127.0.0.1") != 1)
+    {
+        printf("Erreur d'initialisation\n");
+        return 1;
+    }
+    
+    
 }
 /*
     Transformations jours en secondes :

@@ -1,7 +1,7 @@
 #ifndef __SERVEUR_H__
 #define __SERVEUR_H__
 
-<<<<<<< HEAD
+
 
 //request methods
 #define REQUEST_METHOD_GET "GET"
@@ -32,9 +32,8 @@
 #define REASON_PHRASE_FORBIDDEN "Forbidden"
 
 
-=======
 #include "protocole.h"
->>>>>>> 8545051da3e68de5061368e86a9622d2229d8720
+
 
 /* Initialisation.
  * 
