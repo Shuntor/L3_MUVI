@@ -176,6 +176,7 @@
 	*/
 	void supprimerObjet(long int id);
 
+	void serialiser(Item* item, char* chaineRes);
 
 	/* Foncton de tests */
 	void test();

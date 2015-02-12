@@ -299,6 +299,8 @@ int connexion(UserAccount* account)
 
 int listeObjet()
 {
+    char chaine[5000];
+
     FILE *sortie;
     Item item;
     videBuffer();
@@ -309,7 +311,10 @@ int listeObjet()
     {
        printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
        afficherDate(item.fermetureEnchere);
+       printf("\n");
+       serialiser(&item, chaine); printf("%s\n", chaine);
        printf("================================\n");
+
     } // fin du while
 
     printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
@@ -432,13 +437,13 @@ void serialiser(Item* item, char* chaineRes)
      //Il faut passer la chaine dans laquelle tout est serialisé en paramètre, celle-ci doit avoir une taille max de la lg du champ données
 
     sprintf(chaine,"%ld",(long int)item->id);
-    strcat(strcpy(chaineRes, chaine ),"_") ;
+    strcat(strcpy(chaineRes, chaine ),"_") ;printf("%s\n", chaineRes);
     sprintf(chaine,"%ld",(long int)item->idVendeur);
-    strcat(strcat(chaine , chaineRes),"_");  
+    strcat(strcat(chaine , chaineRes),"_"); printf("%s\n", chaineRes); 
     sprintf(chaine,"%ld",(long int)item->idAcheteur);
-    strcat(strcat(chaine , chaineRes),"_");
+    strcat(strcat(chaine , chaineRes),"_");printf("%s\n", chaineRes);
     sprintf(chaine,"%ld",(long int)item->fermetureEnchere);
-    strcat(strcat(chaine , chaineRes),"_");
+    strcat(strcat(chaine , chaineRes),"_");printf("%s\n", chaineRes);
     strcat(strcat(item->nom  , chaineRes),"_");
     strcat(strcat(item->description  , chaineRes),"_");
     sprintf(chaine,"%d",item->prix);
@@ -457,11 +462,9 @@ void serialiser(Item* item, char* chaineRes)
 
 
 void test(){
-    // char *message;
-   // Item item;
-   // item.id=123475;
-   // item.nom="aaaaaaaa";
-   // item.description="bbbbbbb";
+    char ch[200]="";
+    strcpy("lala", ch);
+    printf("%s",ch );
     
 }
 /*
