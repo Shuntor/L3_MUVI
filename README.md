@@ -8,4 +8,4 @@ How to compile
 
 `make`
 
-Binaries "serveur" and "client" output in ./bin/ directory, listeObjet and listeComptes are stored in the current directory at runtime.
+Binaries "serveur" and "client" output in the ./bin/ directory, listeObjet and listeComptes are stored in the current directory at runtime.
