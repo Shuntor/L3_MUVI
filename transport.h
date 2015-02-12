@@ -8,7 +8,7 @@
 #ifndef __TRANSPORT_H__
 #define __TRANSPORT_H__
 
-#define LONGUEUR_TAMPON 4096
+#define LONGUEUR_TAMPON 300
 
 /*
 ** Initialise le socket client et se connecte au serveur donné

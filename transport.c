@@ -194,23 +194,23 @@ char *serveur_reception() {
     {
         /* on cherche dans le tampon courant */
         while((fin_tampon_serveur > debut_tampon_serveur) && (!trouve) &&
-          (index < LONGUEUR_TAMPON-2))
+          (index < LONGUEUR_TAMPON-1))
         {
-/*          fprintf(stderr, "Boucle recherche char : (%x), index: %d, debut tampon: %d.\n",
-              tampon_serveur[debut_tampon_serveur],
-              index, debut_tampon_serveur);*/
-/*          fprintf(stderr, "message[%u]=%c, debut_tampon_serveur: %u, fin_tampon_serveur: %u\n",
-              index, message[index], debut_tampon_serveur, fin_tampon_serveur);*/
-            message[index++] = tampon_serveur[debut_tampon_serveur++];
-          fprintf(stderr, "message[%u]=%c, debut_tampon_serveur: %u, fin_tampon_serveur: %u\n",
-              index-1, message[index-1], debut_tampon_serveur-1, fin_tampon_serveur);
-            if ((message[index-1]=='$') && (message[index-2]=='_'))
-                trouve = true;
+
+            message[index] = tampon_serveur[debut_tampon_serveur];
+
+            if (index > 0)
+                if ((message[index]=='$') && (message[index-1]=='_'))
+                    trouve = true;
+            
+            index++;
+            debut_tampon_serveur++;
+
         }
         /* on a trouve ? */
         if (trouve)
         {
-            message[index+1] = '\0';
+            message[index] = '\0';
             fini = true;
             // fprintf(stderr, "trouve\n");
 
@@ -220,7 +220,7 @@ char *serveur_reception() {
         else if (index == LONGUEUR_TAMPON-2 && !trouve)
         {
             fprintf(stderr, "Taille max du tampon atteint: index: %u\n", index);
-            message[index+1] = '\0';
+            message[index] = '\0';
             fini = true;
             return strdup(message);
         }
@@ -242,7 +242,7 @@ char *serveur_reception() {
                 serveur_fin_connexion = true;
                 // on n'en recevra pas plus, on renvoie ce qu'on avait ou null sinon
                 if(index > 0) {
-                    message[index+1] = '\0';
+                    message[index] = '\0';
                     return strdup(message);
                 } else {
                     return NULL;
@@ -278,32 +278,31 @@ char *client_reception() {
     {
         /* on cherche dans le tampon courant */
         while((fin_tampon_client > debut_tampon_client) && (!trouve) &&
-          (index < LONGUEUR_TAMPON-2))
+          (index < LONGUEUR_TAMPON-1))
         {
-/*          fprintf(stderr, "Boucle recherche char : (%x), index: %d, debut tampon: %d.\n",
-              tampon_client[debut_tampon_client],
-              index, debut_tampon_client);*/
-/*          fprintf(stderr, "message[%u]=%c, debut_tampon_client: %u, fin_tampon_client: %u\n",
-              index, message[index], debut_tampon_client, fin_tampon_client);*/
-            message[index++] = tampon_client[debut_tampon_client++];
-/*          fprintf(stderr, "message[%u]=%c, debut_tampon_client: %u, fin_tampon_client: %u\n",
-              index-1, message[index-1], debut_tampon_client-1, fin_tampon_client);*/
-            if ((message[index]=='$') && (message[index-1]=='_'))
-                trouve = true;
+
+            message[index] = tampon_client[debut_tampon_client];
+
+            if (index > 0)
+                if ((message[index]=='$') && (message[index-1]=='_'))
+                    trouve = true;
+            
+            index++;
+            debut_tampon_client++;
+
         }
-        /* on a trouve ? */
+        /* on a trouvé "_$" ? */
         if (trouve)
         {
-            message[index+1] = '\0';
+            message[index] = '\0';
             fini = true;
-            // fprintf(stderr, "trouve\n");
             return strdup(message);
 
         }
         else if (index == LONGUEUR_TAMPON-2 && !trouve)
         {
             fprintf(stderr, "Taille max du tampon atteint: index: %u\n", index);
-            message[index+1] = '\0';
+            message[index] = '\0';
             fini = true;
             return strdup(message);
         }
@@ -311,12 +310,12 @@ char *client_reception() {
         {
             /* il faut en lire plus */
             debut_tampon_client = 0;
-            // fprintf(stderr, "recv\n");
+            fprintf(stderr, "recv\n");
             retour = recv(socket_client, tampon_client, LONGUEUR_TAMPON, 0);
-            // fprintf(stderr, "retour : %d\n", retour);
-            // int i;
-            // for (i = 0; i<retour; i++)
-            // fprintf(stderr, "tampon_client[%u]=%c\n", i, tampon_client[i]);
+            fprintf(stderr, "retour : %d\n", retour);
+            int i;
+            for (i = 0; i<retour; i++)
+            fprintf(stderr, "tampon_client[%u]=%c\n", i, tampon_client[i]);
             if (retour < 0) {
                 perror("client_reception(), erreur de recv");
                 return NULL;
@@ -325,7 +324,7 @@ char *client_reception() {
                 client_fin_connexion = true;
                 // on n'en recevra pas plus, on renvoie ce qu'on avait ou null sinon
                 if(index > 0) {
-                    message[index+1] = '\0';
+                    message[index] = '\0';
                     return strdup(message);
                 } else {
                     return NULL;

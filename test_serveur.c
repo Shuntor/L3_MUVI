@@ -20,13 +20,10 @@ int main()
 
         while(!fini)
         {
-                printf("avant recep fini\n");
             message = serveur_reception();
-                printf("recep fini\n");
 
             if(message != NULL) 
             {
-                printf("Reception d'un message:\n");
                 printf("%s\n", message);
                 serveur_emission("GUT too_$");
             }
@@ -35,7 +32,6 @@ int main()
                 fini = 1;
             }
         }
-
 
         serveur_terminaison();
     }
