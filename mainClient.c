@@ -6,8 +6,6 @@
 #include "interfaceClient.h"
 #include "client.h"
 
-#define SERVER_PORT "25000"
-#define SERVER_ADRESS "127.0.0.1"
 
 /********A faire********\
  *
