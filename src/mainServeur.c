@@ -2,45 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "transport.h"
 #include "fonctions.h"
-#include "serveur.h"
-
-/* TODO:
-
-- Switch suivant les cas des messages
-- Renvoyer une erreur quand le message est trop grand
-
-*/
 
 int main()
 {
     char *message = NULL;
-    message = (char*) malloc(4096);
-    int ret;
-
     int fini = 0;
 
-    Initialisation();
+    serveur_init("5050");
 
     while(1)
     {
         fini = 0;
 
-        AttenteClient();
+        serveur_attente_client();
+
 
         while(!fini)
         {
-            ret = ReceptionBinaire(message, 4096);
+            message = serveur_reception();
 
             if(message != NULL) 
             {
-                int i = 0;
-                while (i < ret)
-                {
-                    printf("%03u ", message[i++]);
-                }
-                printf("\n");
-                printf("%04u\n\n", ret);
+                printf("%s\n", message);
+                if (strstr(message, "ANC") == message)
+                    serveur_nouvelUtilisateur(message);
             }
             else
             {
@@ -48,7 +35,7 @@ int main()
             }
         }
 
-        TerminaisonClient();
+        serveur_terminaison();
     }
 
     return 0;

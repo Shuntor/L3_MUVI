@@ -2,8 +2,8 @@ SRCDIR=src
 BINDIR=bin
 OBJDIR=obj
 
-SOURCES_CLIENT=transport.c fonctions.c test_client.c
-SOURCES_SERVEUR=transport.c fonctions.c test_serveur.c
+SOURCES_CLIENT=transport.c fonctions.c interfaceClient.c mainClient.c
+SOURCES_SERVEUR=transport.c fonctions.c mainServeur.c
 OBJECTSPRE_C=$(SOURCES_CLIENT:%.c=%.o)
 OBJECTSPRE_S=$(SOURCES_SERVEUR:%.c=%.o)
 OBJECTSLINKER_C=$(OBJECTSPRE_C:%=$(OBJDIR)/%)

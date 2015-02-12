@@ -5,6 +5,7 @@
 #include "fonctions.h"
 #include "interfaceClient.h"
 #include "client.h"
+#include "transport.h"
 
 
 /********A faire********\
@@ -33,6 +34,15 @@ int main(void)
 	// int test;
 	UserAccount account;
 	Item item;
+
+
+	if (client_init(SERVER_ADDRESS, SERVER_PORT) != 0)
+	{
+		fprintf(stderr, "init_client() failed. Exiting.\n");
+		exit(1);
+	}
+
+
 	while( (choix = menuAccueil()) != MENU_CHOICE_QUIT ){
 		switch(choix){
 			case MENU_CHOICE_MAIN_ANONYMOUS:
