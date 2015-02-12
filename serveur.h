@@ -38,7 +38,7 @@
 /* Initialisation.
  * 
  */
-int Initialisation(char *port);
+int InitialisationServeur(char *port);
 
 
 /* connectait.

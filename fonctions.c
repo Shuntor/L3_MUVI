@@ -4,7 +4,8 @@
 #include <time.h>
 
 #include "fonctions.h"
-
+#include "client.h"
+// #include "serveur.h"
 
 /* videBuffer.
 */
@@ -363,17 +364,16 @@ void seeSelfItem(UserAccount* account){
         i--;
     }
 
-    nettoyerFichierObjet(account->id);
+    // nettoyerFichierObjet(account->id);
 
     printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
     fclose(sortie);
 }
 
-void nettoyerFichierObjet(long int idVendeur){
+void nettoyerFichierObjet(long int idVendeur){ //Pas fini
     FILE *sortie;
     Item item;
     videBuffer();
-    system("clear");
     sortie=fopen(ITEM_FILE, "rt");
     while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
     {
@@ -384,6 +384,62 @@ void nettoyerFichierObjet(long int idVendeur){
     }
     fclose(sortie);
 }
+
+int encherir(long int idObjet, long int idacheteur, int prix){
+    FILE *sortie;
+    Item item;
+    File f;
+    int i=0,cond;
+    Item* deb;
+
+    sortie=fopen(ITEM_FILE, "rt+");
+ 
+    while(fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere) > 0); // tant que la fin du fichier n'est pas atteinte
+    {
+        if (i=0)
+        {
+            f.item=item;
+            deb=&f.item;
+
+        }else
+        {
+            f.suivant = (Item)malloc(sizeof(Item));
+            f.suivant = item;
+        }
+
+        tabItem[i]=item;
+        if (item.id==idObjet)
+        {
+            tabItem[i].idAcheteur=idacheteur;
+            tabItem[i].prix=prix;
+        }
+        i++
+    }
+    //On supprime le contenu du fichier pour reécrire à partir du tableau et ainsi le mettre à jour
+    fclose(sortie);
+    sortie=fopen(ITEM_FILE, "w+");
+    while()
+
+    fclose(sortie);
+}
+
+void serialiser(Item* item, char* chaineRes)
+{
+
+     //Il faut passer la chaine dans laquelle tout est serialisé en paramètre, celle-ci doit avoir une taille max de la lg du champ données
+
+
+    strcat(strcpy(chaineRes, item.id),"_") ;
+    strcat(strcat(item.idVendeur , chaineRes),"_");  
+    strcat(strcat(item.idAcheteur , chaineRes),"_");
+    strcat(strcat(item.fermetureEnchere , chaineRes),"_");
+    strcat(strcat(item.nom  , chaineRes),"_");
+    strcat(strcat(item.description  , chaineRes),"_");
+    strcat(strcat(item.prix , chaineRes),"_");
+    strcat(strcat(item.lieu , chaineRes),"_");
+
+}
+
 // void supprimerObjet(long int id){
 //     int pos=0; 
 //     int trouve=0; 
@@ -394,15 +450,9 @@ void nettoyerFichierObjet(long int idVendeur){
 
 
 void test(){
-    char *message;
+    // char *message;
+   
 
-
-    if(Initialisation("127.0.0.1") != 1)
-    {
-        printf("Erreur d'initialisation\n");
-        return 1;
-    }
-    
     
 }
 /*

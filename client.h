@@ -9,7 +9,7 @@
  * Utilisez localhost pour un fonctionnement local.
  * renvoie 1 si a c'est bien pass 0 sinon
  */
-int Initialisation(char *machine);
+int InitialisationClient(char *machine);
 
 /* Recoit un message envoye par le serveur.
  * retourne le message ou NULL en cas d'erreur.

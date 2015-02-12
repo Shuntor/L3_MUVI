@@ -35,15 +35,12 @@ int connectEnd = FALSE;
 /* Initialisation.
  * 
  */
-int Initialisation(char *port) {
+int InitialisationServeur(char *port) {
     int n;
     const int on = 1;
     struct addrinfo hints, *res, *ressave;
-<<<<<<< HEAD
-=======
-    char port[] = SERVER_PORT;
 
->>>>>>> 8545051da3e68de5061368e86a9622d2229d8720
+    char port[] = SERVER_PORT;
 
     bzero(&hints, sizeof(struct addrinfo));
 

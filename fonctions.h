@@ -30,6 +30,7 @@
 #define ITEM_DESCRIPTION_LENGTH 200
 #define ITEM_LOCATION_LENGTH 100
 
+
 	typedef struct UserAccount
 	{
 		long int id; //Identifiant de l'utilisateur, il est unique !
@@ -54,6 +55,10 @@
 	 	char lieu[ITEM_LOCATION_LENGTH];
 	} Item;
 
+	typedef struct File{
+		Item item ;
+		Item * suivant;
+	}File;
 
 
 	/* N : videBuffer.
@@ -159,6 +164,12 @@
 	*/
 	void nettoyerFichierObjet(long int idVendeur);
 	
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	int encherir(long int idObjet, long int idVendeur, int prix);
+
 	/* N : 
 	 * D : 
 	 * R : 
