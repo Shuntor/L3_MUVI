@@ -176,8 +176,32 @@
 	*/
 	void supprimerObjet(long int id);
 
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	char *serialiser_item(Item* i);
 
-	/* Foncton de tests */
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	char *serialiser_account(UserAccount* a);
+
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	Item *deserialiser_item(char* s);
+
+	/* N : 
+	 * D : 
+	 * R : 
+	*/
+	UserAccount *deserialiser_account(char* s);
+
+
+	/* Fonction de tests */
 	void test();
 
 

@@ -4,7 +4,7 @@
 #include <time.h>
 
 #include "fonctions.h"
-#include "client.h"
+#include "transport.h"
 // #include "serveur.h"
 
 /* videBuffer.
@@ -180,6 +180,44 @@ void nouvelUtilisateur(){
     printf("\nAppuyez sur une touche pour continuer...\n");
     getchar();
     
+}
+
+void client_nouvelUtilisateur()
+{
+    char* reponse;
+    char buffer[4096];
+    UserAccount newAccount;
+    saisieUtilisateur(&newAccount);
+
+    sprintf(buffer, "ANC %s_$", serialiser_account(&newAccount));
+
+    client_emission(buffer);
+    reponse = client_reception();
+    if (strcmp(reponse, "107 _$") == 0)
+    {
+        printf("\t\tNouveau compte créé :\n\n"); 
+        printf("-Prénom : %s\n", newAccount.firstname ); //ATTENTION il y a déjà un \n dans la varable lu
+        printf("-Nom : %s\n", newAccount.lastname );
+        printf("-Adresse : %s\n", newAccount.adress );
+        printf("-Mail : %s\n", newAccount.mail );
+        printf("\nAppuyez sur une touche pour continuer...\n");
+        getchar();
+    }
+    else
+    {
+        fprintf(stderr, "%s\n", "207 ERROR: Erreur de création du nouvel utilisateur");
+    }
+}
+
+int serveur_nouvelUtilisateur(char* mess)
+{
+    char *s = strdup(mess + 4*(sizeof(char)));
+    s[strlen(s)-1] = '\0';
+    s[strlen(s)-2] = '\0';
+    EnregDansFichier(deserialiser_account(s));
+    serveur_emission("107 _$");
+    free(s);
+    return 0;
 }
 
 void saisieObjet(Item* item)
@@ -384,7 +422,7 @@ void nettoyerFichierObjet(long int idVendeur){ //Pas fini
     }
     fclose(sortie);
 }
-
+/*
 int encherir(long int idObjet, long int idacheteur, int prix){
     FILE *sortie;
     Item item;
@@ -422,23 +460,128 @@ int encherir(long int idObjet, long int idacheteur, int prix){
 
     fclose(sortie);
 }
-
-void serialiser(Item* item, char* chaineRes)
+*/
+char *serialiser_item(Item* i)
 {
+    char buffer[4096];
 
-     //Il faut passer la chaine dans laquelle tout est serialisé en paramètre, celle-ci doit avoir une taille max de la lg du champ données
+    sprintf(buffer, "%ld_%ld_%ld_%u_%s_%s_%d_%s",
+      i->id, i->idVendeur, i->idAcheteur, i->fermetureEnchere, i->nom, i->description,
+      i->prix, i->lieu);
 
-
-    strcat(strcpy(chaineRes, item.id),"_") ;
-    strcat(strcat(item.idVendeur , chaineRes),"_");  
-    strcat(strcat(item.idAcheteur , chaineRes),"_");
-    strcat(strcat(item.fermetureEnchere , chaineRes),"_");
-    strcat(strcat(item.nom  , chaineRes),"_");
-    strcat(strcat(item.description  , chaineRes),"_");
-    strcat(strcat(item.prix , chaineRes),"_");
-    strcat(strcat(item.lieu , chaineRes),"_");
+    strdup(buffer);
 
 }
+
+Item *deserialiser_item(char* s)
+{
+    Item *d = malloc(sizeof(Item));
+    int ci = 0, cb = 0;
+    int i;
+    char buff[1024];
+
+    for (i=0;i<8;i++)
+    {
+        while (s[ci] != '_')
+        {
+            buff[cb] = s[ci];
+            ci++;
+            cb++;
+        }
+        ci++;
+        buff[cb] = '\0';
+        cb = 0;
+        if (i == 0)
+            d->id = atoi(buff);
+        else if (i == 1)
+            d->idVendeur = atoi(buff);
+        else if (i == 2)
+            d->idAcheteur = atoi(buff);
+        else if (i == 3)
+            d->fermetureEnchere = atoi(buff);
+        else if (i == 4)
+        {
+            strncpy(d->nom, buff, ITEM_NAME_LENGTH);
+            (d->nom)[ITEM_NAME_LENGTH-1] = '\0';
+        }
+        else if (i == 5)
+        {
+            strncpy(d->description, buff, ITEM_DESCRIPTION_LENGTH);
+            (d->description)[ITEM_DESCRIPTION_LENGTH-1] = '\0';
+        }
+        else if (i == 6)
+            d->prix = atoi(buff);
+        else if (i == 7)
+        {
+            strncpy(d->lieu, buff, ITEM_LOCATION_LENGTH);
+            (d->lieu)[ITEM_LOCATION_LENGTH-1] = '\0';
+        }
+    }
+
+    return d;
+
+}
+
+char *serialiser_account(UserAccount* a)
+{
+    char buffer[4096];
+
+    sprintf(buffer, "%ld_%d_%s_%s_%s_%s",
+      a->id, a->type, a->firstname, a->lastname, a->adress, a->mail);
+
+    strdup(buffer);
+
+}
+
+UserAccount *deserialiser_account(char* s)
+{
+    UserAccount *d = malloc(sizeof(UserAccount));
+    int ci = 0, cb = 0;
+    int i;
+    char buff[1024];
+
+    for (i=0;i<6;i++)
+    {
+        while (s[ci] != '_')
+        {
+            buff[cb] = s[ci];
+            ci++;
+            cb++;
+        }
+        ci++;
+        buff[cb] = '\0';
+        cb = 0;
+        if (i == 0)
+            d->id = atoi(buff);
+        else if (i == 1)
+            d->type = atoi(buff);
+        else if (i == 2)
+        {
+            strncpy(d->firstname, buff, USERACCOUNT_FIRSTNAME_LENGTH);
+            (d->firstname)[USERACCOUNT_FIRSTNAME_LENGTH-1] = '\0';
+        }
+        else if (i == 3)
+        {
+            strncpy(d->lastname, buff, USERACCOUNT_LASTNAME_LENGTH);
+            (d->lastname)[USERACCOUNT_LASTNAME_LENGTH-1] = '\0';
+        }
+        else if (i == 4)
+        {
+            strncpy(d->adress, buff, USERACCOUNT_ADRESS_LENGTH);
+            (d->adress)[USERACCOUNT_ADRESS_LENGTH-1] = '\0';
+        }
+        else if (i == 5)
+        {
+            strncpy(d->mail, buff, USERACCOUNT_MAIL_LENGTH);
+            (d->mail)[USERACCOUNT_MAIL_LENGTH-1] = '\0';
+        }
+    }
+
+    return d;
+
+}
+
+
 
 // void supprimerObjet(long int id){
 //     int pos=0; 

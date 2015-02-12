@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "transport.h"
-
+#include "fonctions.h"
 
 /*
   gcc test_client.c transport.c -o test_client
@@ -14,11 +14,11 @@ int main()
 {
     char* message;
     client_init("localhost", "5050");
-    
+
     client_emission("HEL test_$");
-    printf("avant recep\n");
+    client_nouvelUtilisateur();
+
     message = client_reception();
-    printf("après recep\n");
     if (message!=NULL)
     {
     	printf("Reception d'un message:\n");

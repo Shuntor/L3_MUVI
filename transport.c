@@ -378,7 +378,7 @@ int client_emission(char *message) {
     printf("Taille: %u bytes\n", taille);
 */
     if ((emis = send(socket_client, message, taille, 0)) == -1) {
-        perror("Emission, problème lors du send");
+        perror("client_emission(), problème lors du send");
         return -1;
     }
     printf("Emission de %d bytes\n", emis);
@@ -426,7 +426,7 @@ int serveur_emission(char *message) {
     printf("Taille: %u bytes\n", taille);
 */
     if ((emis = send(socket_serveur, message, taille, 0)) == -1) {
-        perror("Emission, problème lors du send");
+        perror("serveur_emission(), problème lors du send");
         return -1;
     }
     printf("Emission de %d bytes\n", emis);

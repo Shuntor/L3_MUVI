@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "transport.h"
+#include "fonctions.h"
 
 int main()
 {
@@ -25,7 +26,8 @@ int main()
             if(message != NULL) 
             {
                 printf("%s\n", message);
-                serveur_emission("GUT too_$");
+                if (strstr(message, "ANC") == message)
+                    serveur_nouvelUtilisateur(message);
             }
             else
             {
