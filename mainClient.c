@@ -117,6 +117,11 @@ int main(void)
 							            //Recherche d'un objet							        
 							        	rechercheObjet(&item);
 							            break;
+							        case MENU_CHOICE_MAIN_ENCHERIR:
+							            //Encherir							        
+							        	if (!encherir(account.id))
+							        		printf("L'objet n'existe pas...\n");getchar();
+							            break;
 							        case MENU_CHOICE_QUIT:
 							            //On quitte
 							            break;

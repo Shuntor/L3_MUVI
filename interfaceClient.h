@@ -12,9 +12,11 @@
 // Menus d'utilisateurs
 #define MENU_CHOICE_ITEM_LIST 1
 #define MENU_CHOICE_MAIN_SEARCH 2
+#define MENU_CHOICE_MAIN_ENCHERIR 3
 //
 #define MENU_CHOICE_SELL 1
 #define MENU_CHOICE_ALREADY_SELL 2 
+
 
 
 /* menuAccueil.

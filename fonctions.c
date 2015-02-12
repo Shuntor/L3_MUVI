@@ -131,9 +131,7 @@ void saisieUtilisateur(UserAccount * account)
 void EnregDansFichier (UserAccount* account)
 {
      FILE *sortie;
-  
-       sortie=fopen(ACCOUNT_FILE,"at");
- 
+       sortie=fopen(ACCOUNT_FILE,"at"); 
        if (sortie == NULL)
        {
             printf("Un probleme est survenue lors de la tentative d'enregistrement de vos donnees dans le fichier\n");
@@ -142,27 +140,28 @@ void EnregDansFichier (UserAccount* account)
        {
             fprintf(sortie,"%lu \n %d \n %s \n %s \n %s \n %s \n", account->id, account->type, account->firstname, account->lastname, account->adress, account->mail);
        } 
-
        fclose(sortie);
 }
 
 int RechercheCpte (UserAccount* account, char* nomClient) //Marche bien maintenant
 {
-     int trouve=-1;
+     int trouve=1;
      FILE *sortie;
-      // printf("nomCLient : %s account : %s\n", nomClient, account->lastname );
      
      sortie=fopen(ACCOUNT_FILE, "rt");
-     while ((trouve!=0) && fscanf(sortie,"%lu\n%d\n%s\n%s\n%s\n%s", &account->id, &account->type, account->firstname, account->lastname, account->adress, account->mail) ) // tant que la fin du fichier n'est pas atteinte
+     while ((trouve!=0) && fscanf(sortie,"%lu\n%d\n%s\n%s\n%[^\n]\n%s", &account->id, &account->type, account->firstname, account->lastname, account->adress, account->mail)>0 ) // tant que la fin du fichier n'est pas atteinte
      {
-        // printf("%lu\n%d\n%s\n%s\n%s\n%s\n", account->id, account->type, account->firstname, account->lastname, account->adress, account->mail);
+        printf("%lu\n%d\n%s\n%s\n%s\n%s\n", account->id, account->type, account->firstname, account->lastname, account->adress, account->mail);
+         // printf("nomCLient : %s account : %s\n", nomClient, account->lastname );
          if (nomClient ) // Si un nom de client a ete saisi
          {
             trouve=(strcmp(nomClient, account->lastname));
             // printf("trouve : %d account->lasname : %s nomClient : %s\n", trouve, account->lastname, nomClient); getchar();
          }
      } // fin du while
+    fclose(sortie);
     return (trouve==0)? TRUE : FALSE;
+
 }
 
 
@@ -177,7 +176,7 @@ void nouvelUtilisateur(){
     printf("-Nom : %s\n", newAccount.lastname );
     printf("-Adresse : %s\n", newAccount.adress );
     printf("-Mail : %s\n", newAccount.mail );
-    printf("\nAppuyez sur une touche pour continuer...\n");
+    printf("\n\n\nAppuyez sur une touche pour continuer...\n");
     getchar();
     
 }
@@ -257,12 +256,13 @@ void saisieObjet(Item* item)
     item->fermetureEnchere=calculFinEnchere(item->fermetureEnchere); 
     videBuffer();
     system("clear");
-
 }
 
 void EnregDansFichierObjet (Item* item)
 {
     FILE *sortie; 
+    videBuffer();
+
     sortie=fopen(ITEM_FILE,"at");
     if (sortie == NULL)
     {
@@ -277,16 +277,9 @@ void EnregDansFichierObjet (Item* item)
 
 void nouvelObjet(UserAccount* account){
     
-/*    long long id; */
-    srand(time(NULL));
-
-/*    id = rand();
-    id = id | ((uint64_t)time(NULL) << 16);*/
-
-
     Item item;
-
     saisieObjet(&item);
+
 
     item.idVendeur = account->id;
 
@@ -348,6 +341,7 @@ int listeObjet()
        printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
        afficherDate(item.fermetureEnchere);
        printf("================================\n");
+
     } // fin du while
 
     printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
@@ -385,15 +379,18 @@ void seeSelfItem(UserAccount* account){
     printf("========LISTE DE VOS OBJETS ENCORE EN VENTE======== \n\n");
     while (fscanf(sortie,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
     {
-        if (!isDateOut(item.fermetureEnchere)) 
+        if (item.idVendeur == account->id)
         {
-            printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
-            afficherDate(item.fermetureEnchere);
-            printf("================================\n");
-        }else
-        { //On stocks les objets vendus 
-            i++;
-            vendu[i]=item;
+            if (!isDateOut(item.fermetureEnchere)) 
+            {
+                printf("Nom : %s\nPrix : %d\nDescription : %s\nlieu :%s\n",item.nom, item.prix, item.description, item.lieu);
+                afficherDate(item.fermetureEnchere);
+                printf("================================\n");
+            }else
+            { //On stocks les objets vendus 
+                i++;
+                vendu[i]=item;
+            }
         }
     } // fin du while
 
@@ -403,7 +400,7 @@ void seeSelfItem(UserAccount* account){
     }
 
     // nettoyerFichierObjet(account->id);
-
+    // nettoyerFichierObjet(account->id); //On supprime les objets qu'il a vendu du fichier
     printf("\n\n\nAppuyez sur une touche pour continuer ...\n");getchar();
     fclose(sortie);
 }
@@ -411,56 +408,82 @@ void seeSelfItem(UserAccount* account){
 void nettoyerFichierObjet(long int idVendeur){ //Pas fini
     FILE *sortie;
     Item item;
-    videBuffer();
-    sortie=fopen(ITEM_FILE, "rt");
-    while (fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0  ) // tant que la fin du fichier n'est pas atteinte
+    Item tabItem[20];
+    int i=0, trouve=0;
+    sortie=fopen(ITEM_FILE, "rt"); 
+    while(fscanf(sortie,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere) > 0); // tant que la fin du fichier n'est pas atteinte
     {
-        if (isDateOut(item.fermetureEnchere) && item.idVendeur == idVendeur)
-        {
-            // supprimerObjet(item.id);
-        }
-    }
-    fclose(sortie);
-}
-/*
-int encherir(long int idObjet, long int idacheteur, int prix){
-    FILE *sortie;
-    Item item;
-    File f;
-    int i=0,cond;
-    Item* deb;
-
-    sortie=fopen(ITEM_FILE, "rt+");
- 
-    while(fscanf(sortie,"%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere) > 0); // tant que la fin du fichier n'est pas atteinte
-    {
-        if (i=0)
-        {
-            f.item=item;
-            deb=&f.item;
-
-        }else
-        {
-            f.suivant = (Item)malloc(sizeof(Item));
-            f.suivant = item;
-        }
-
         tabItem[i]=item;
-        if (item.id==idObjet)
+        if (item.idVendeur==idVendeur && isDateOut(item.fermetureEnchere))
         {
-            tabItem[i].idAcheteur=idacheteur;
-            tabItem[i].prix=prix;
+            trouve=1;
+            i--; 
         }
-        i++
+        i++;
     }
-    //On supprime le contenu du fichier pour reécrire à partir du tableau et ainsi le mettre à jour
+    i--;
     fclose(sortie);
-    sortie=fopen(ITEM_FILE, "w+");
-    while()
-
-    fclose(sortie);
+    if (trouve)
+    {
+        //On supprime le contenu du fichier pour reécrire à partir du tableau et ainsi le mettre à jour
+        sortie=fopen(ITEM_FILE, "w+");
+        while(i>=0){
+            fprintf(sortie,"%lu \n %lu \n %s \n %d \n %s \n %s \n %u \n", tabItem[i].id, tabItem[i].idVendeur, tabItem[i].nom, tabItem[i].prix, tabItem[i].description, tabItem[i].lieu, tabItem[i].fermetureEnchere);
+            i--;
+        }    
+        fclose(sortie);
+    }
 }
-*/
+
+int encherir(long int idacheteur){
+    FILE *fic;
+    Item item;
+    Item tabItem[20];
+    int i=0, prix, trouve=0;
+    char nomItem[ITEM_NAME_LENGTH];
+
+    system("clear");
+    printf("Entrez le nom de l'objet sur lequel vous souhaitez encherir :\n");
+    videBuffer();
+    fgets(nomItem,ITEM_NAME_LENGTH,stdin);
+    if(strlen(nomItem) < ITEM_NAME_LENGTH-1)
+        nomItem[strlen(nomItem)-1] = '\0';
+    printf("\t\tDe combien voulez-vous encherir ?\n");
+    scanf("%d",&prix);
+    videBuffer();
+
+    fic=fopen(ITEM_FILE, "rt"); 
+    printf("test 1\n");
+    // fseek(fic,0,SEEK_SET);
+    // fscanf(fic,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere);printf("%s\n",item.nom );getchar();
+    while(fscanf(fic,"%lu\n%lu\n%s\n%d\n%[^\n]\n%s\n%u",&item.id,&item.idVendeur, item.nom, &item.prix, item.description, item.lieu, &item.fermetureEnchere)>0 ) // tant que la fin du fichier n'est pas atteinte
+    {
+        tabItem[i]=item;
+        printf("%s      %s \n", item.nom,nomItem);
+        if (strcmp(item.nom,nomItem)==0)
+        {
+            trouve=1;
+            tabItem[i].idAcheteur=idacheteur;
+            tabItem[i].prix+=prix;
+        }
+        i++;
+    }
+    i--;
+    fclose(fic);
+    printf("test 2\n");
+    if (trouve)
+    {
+        //On supprime le contenu du fichier pour reécrire à partir du tableau et ainsi le mettre à jour
+        fic=fopen(ITEM_FILE, "w+");
+        while(i>=0){
+            fprintf(fic,"%lu \n %lu \n %s \n %d \n %s \n %s \n %u \n", tabItem[i].id, tabItem[i].idVendeur, tabItem[i].nom, tabItem[i].prix, tabItem[i].description, tabItem[i].lieu, tabItem[i].fermetureEnchere);
+            i--;
+        }    
+        fclose(fic);
+    }
+    return trouve;
+}
+
 char *serialiser_item(Item* i)
 {
     char buffer[4096];
@@ -593,9 +616,17 @@ UserAccount *deserialiser_account(char* s)
 
 
 void test(){
-    // char *message;
-   
-
+    FILE *sortie;
+       sortie=fopen(ITEM_FILE,"at"); 
+       if (sortie == NULL)
+       {
+            printf("Un probleme est survenue lors de la tentative d'enregistrement de vos donnees dans le fichier\n");
+       }
+       else
+       {
+            fprintf(sortie,"lala");
+       } 
+       fclose(sortie);
     
 }
 /*
