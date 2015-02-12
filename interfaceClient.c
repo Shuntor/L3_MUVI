@@ -66,6 +66,7 @@ int menuPrincipalAcheteur()
     fprintf(stdout, "\t\t\t\tBIENVENUE SUR MUVI - Acheteur\n\n\n");
     fprintf(stdout, "\t\t\t\t%d - Liste d'objets\n", MENU_CHOICE_ITEM_LIST);
     fprintf(stdout, "\t\t\t\t%d - Recherche d'objet(s) par mot clef\n", MENU_CHOICE_MAIN_SEARCH);
+    fprintf(stdout, "\t\t\t\t%d - Encherir\n", MENU_CHOICE_MAIN_ENCHERIR);
     fprintf(stdout, "\t\t\t\t%d - Retour\n", MENU_CHOICE_QUIT);
 //    videBuffer();
     return saisieChar() - '0';

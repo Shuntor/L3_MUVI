@@ -13,11 +13,6 @@
 #define ACCOUNT_TYPE_VENDOR 2
 #define ACCOUNT_TYPE_USER 3
 
-// account labels
-// #define ACCOUNT_LABEL_ADMIN "Admin, become a god ;) "
-// #define ACCOUNT_LABEL_VENDOR "Vendor, limited to sell things"
-// #define ACCOUNT_LABEL_USER "User, limited to bought things"
-
 
 //Longueur des champs
 //Utilisateur
@@ -168,7 +163,7 @@
 	 * D : 
 	 * R : 
 	*/
-	int encherir(long int idObjet, long int idVendeur, int prix);
+	int encherir(long int idacheteur);
 
 	/* N : 
 	 * D : 
@@ -176,7 +171,6 @@
 	*/
 	void supprimerObjet(long int id);
 
-	void serialiser(Item* item, char* chaineRes);
 
 	/* Foncton de tests */
 	void test();
